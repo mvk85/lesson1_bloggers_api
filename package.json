@@ -1,0 +1,27 @@
+{
+  "name": "lesson1_bloggers_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mvk85/lesson1_bloggers_api.git",
+  "author": "mvk85 <messages.mvk@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon --inspect dist/index.js",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.31",
+    "nodemon": "^2.0.16",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}
