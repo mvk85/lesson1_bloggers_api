@@ -16,13 +16,6 @@ app.get("/bloggers", (req: Request, res: Response) => {
 })
 
 app.post("/bloggers", (req: Request, res: Response) => {
-    /*
-    {
-  "name": "string",
-  "youtubeUrl": "string"
-}
-*/
-
     const newBloggers: Blogger = {
         id: +(new Date()),
         name: req.body.name,
@@ -33,12 +26,21 @@ app.post("/bloggers", (req: Request, res: Response) => {
 
     if (errors) {
         res.status(400).send(errors)
-
     } else {
         bloggers.push(newBloggers);
 
         res.status(201).send(newBloggers)
     }    
+})
+
+app.get("/bloggers/:id", (req: Request, res: Response) => {
+    const blogger = bloggers.find(b => b.id === Number(req.params.id))
+
+    if (blogger) {
+        res.status(200).send(blogger)
+    } else {
+        res.send(404)
+    }
 })
 
 app.listen(port, () => {
