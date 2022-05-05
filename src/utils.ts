@@ -5,17 +5,23 @@ const generateErrorResponse = (errors: ErrorMessage[]) => ({
     resultCode: 0
 })
 
-const generateError = () => ({
+const generateError = (field: string) => ({
     message: 'string',
-    field: 'name'
+    field
 })
+
+const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
 export const validateBlogger = (blogger: Blogger): null | ErrorResponse => {
     const errors: ErrorMessage[] = []
 
-    if (!blogger.name) {
-        errors.push(generateError());
+    if (!blogger.name || blogger.name && blogger.name.length > 15) {
+        errors.push(generateError('name'));
     }
+
+    if (!blogger.youtubeUrl || !regexUrl.test(blogger.youtubeUrl)) {
+        errors.push(generateError('youtubeUrl'))
+    } 
 
     return errors.length ? generateErrorResponse(errors) : null;
 }
