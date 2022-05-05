@@ -63,6 +63,18 @@ app.put("/bloggers/:id", (req: Request, res: Response) => {
     }
 })
 
+app.delete("/bloggers/:id", (req: Request, res: Response) => {
+    const bloggerIndex = bloggers.findIndex(b => b.id === Number(req.params.id))
+
+    if (bloggerIndex === -1) {
+        res.send(404)
+    } else {
+        bloggers.splice(bloggerIndex, 1)
+
+        res.send(204)
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server was starting on port: ${port}`);    
 })
