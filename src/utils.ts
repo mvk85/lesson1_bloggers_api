@@ -19,7 +19,11 @@ export const validateBlogger = (blogger: Blogger): null | ErrorResponse => {
         errors.push(generateError('name'));
     }
 
-    if (!blogger.youtubeUrl || !regexUrl.test(blogger.youtubeUrl)) {
+    if (
+        !blogger.youtubeUrl 
+        || !regexUrl.test(blogger.youtubeUrl) 
+        || blogger.youtubeUrl.length > 100
+    ) {
         errors.push(generateError('youtubeUrl'))
     } 
 
