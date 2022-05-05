@@ -2,7 +2,7 @@ import { Blogger, ErrorMessage, ErrorResponse } from "./types";
 
 const generateErrorResponse = (errors: ErrorMessage[]) => ({
     errorsMessages: errors,
-    resultCode: 0
+    resultCode: 1
 })
 
 const generateError = (field: string) => ({
