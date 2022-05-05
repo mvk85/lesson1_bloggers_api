@@ -15,12 +15,13 @@ const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)
 export const validateBlogger = (blogger: Blogger): null | ErrorResponse => {
     const errors: ErrorMessage[] = []
 
-    if (!blogger.name.trim() || blogger.name.length > 15) {
+    if (!blogger.name || !blogger.name.trim() || blogger.name.length > 15) {
         errors.push(generateError('name'));
     }
 
     if (
-        !blogger.youtubeUrl.trim() 
+        !blogger.youtubeUrl
+        || !blogger.youtubeUrl.trim() 
         || !regexUrl.test(blogger.youtubeUrl) 
         || blogger.youtubeUrl.length > 100
     ) {
