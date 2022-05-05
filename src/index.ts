@@ -43,6 +43,26 @@ app.get("/bloggers/:id", (req: Request, res: Response) => {
     }
 })
 
+app.put("/bloggers/:id", (req: Request, res: Response) => {
+    const blogger = bloggers.find(b => b.id === Number(req.params.id))
+
+    if (!blogger) {
+        res.send(404);
+        return;
+    }
+    
+    blogger.name = req.body.name;
+    blogger.youtubeUrl = req.body.youtubeUrl;
+
+    const errors = validateBlogger(blogger)
+
+    if (errors) {
+        res.status(400).send(errors)
+    } else {
+        res.status(204).send(blogger)
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server was starting on port: ${port}`);    
 })
