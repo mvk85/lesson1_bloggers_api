@@ -1,15 +1,17 @@
 import express, { Request, Response } from "express"
 import bodyParser from "body-parser"
 import cors from "cors"
-import { bloggers } from "./mockData"
+import { bloggers, posts } from "./mockData"
 import { Blogger } from "./types"
-import { validateBlogger } from "./utils"
+import { createPost, validateBlogger, validatePostField } from "./utils"
 
 const app = express()
 const port = process.env.PORT || 3000
 
 app.use(cors())
 app.use(bodyParser.json())
+
+// Bloggers
 
 app.get("/bloggers", (req: Request, res: Response) => {
     res.send(bloggers)
@@ -73,6 +75,46 @@ app.delete("/bloggers/:id", (req: Request, res: Response) => {
 
         res.send(204)
     }
+})
+
+// Posts
+
+app.get("/posts", (req: Request, res: Response) => {
+    res.status(200).send(posts)
+})
+
+app.post("/posts", (req: Request, res: Response) => {
+    const bodyFields = {
+        title: req.body.title,
+        shortDescription: req.body.shortDescription,
+        content: req.body.content,
+        bloggerId: req.body.bloggerId
+    }
+
+    const errors = validatePostField(bodyFields);
+
+    if (errors) {
+        res.status(400).send(errors)
+        
+        return;
+    }
+
+    const newPost = createPost({
+        bloggers,
+        title: req.body.title,
+        shortDescription: req.body.shortDescription,
+        content: req.body.content,
+        bloggerId: req.body.bloggerId
+    })
+
+    if (!newPost) {
+        res.send(404)
+
+        return;
+    }
+
+    posts.push(newPost)
+    res.status(201).send(newPost)
 })
 
 app.listen(port, () => {

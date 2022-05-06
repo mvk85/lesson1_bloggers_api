@@ -1,4 +1,5 @@
-import { Blogger, ErrorMessage, ErrorResponse } from "./types";
+import { bloggers } from "./mockData";
+import { Blogger, CreatPostData, ErrorMessage, ErrorResponse, Post, PostCreateFields } from "./types";
 
 const generateErrorResponse = (errors: ErrorMessage[]) => ({
     errorsMessages: errors,
@@ -29,4 +30,41 @@ export const validateBlogger = (blogger: Blogger): null | ErrorResponse => {
     } 
 
     return errors.length ? generateErrorResponse(errors) : null;
+}
+
+export const validatePostField = (post: PostCreateFields) => {
+    const errors: ErrorMessage[] = []
+
+    if (!post.title || !post.title.trim() || post.title.length > 30) {
+        errors.push(generateError('title'));
+    }
+
+    if (!post.shortDescription || !post.shortDescription.trim() || post.shortDescription.length > 100) {
+        errors.push(generateError('shortDescription'));
+    }
+
+    if (!post.content || !post.content.trim() || post.content.length > 1000) {
+        errors.push(generateError('content'));
+    }
+
+    if (post.bloggerId == null) {
+        errors.push(generateError('bloggerId'));
+    }
+
+    return errors.length ? generateErrorResponse(errors) : null;
+}
+
+export const createPost = (data: CreatPostData): Post | null => {
+    const blogger = bloggers.find(b => b.id === data.bloggerId);
+
+    if (!blogger) return null;
+
+    return {
+        id: +(new Date()),
+        title: data.title,
+        shortDescription: data.shortDescription,
+        content: data.content,
+        bloggerId: data.bloggerId,
+        bloggerName: blogger.name
+    }
 }
