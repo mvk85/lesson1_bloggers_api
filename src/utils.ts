@@ -32,7 +32,7 @@ export const validateBlogger = (blogger: Blogger): null | ErrorResponse => {
     return errors.length ? generateErrorResponse(errors) : null;
 }
 
-export const validatePostField = (post: PostCreateFields) => {
+export const validatePostField = (post: PostCreateFields, blogger?: Blogger) => {
     const errors: ErrorMessage[] = []
 
     if (!post.title || !post.title.trim() || post.title.length > 30) {
@@ -47,7 +47,7 @@ export const validatePostField = (post: PostCreateFields) => {
         errors.push(generateError('content'));
     }
 
-    if (post.bloggerId == null) {
+    if (post.bloggerId == null || !blogger) {
         errors.push(generateError('bloggerId'));
     }
 
@@ -55,16 +55,17 @@ export const validatePostField = (post: PostCreateFields) => {
 }
 
 export const createPost = (data: CreatPostData): Post | null => {
-    const blogger = bloggers.find(b => b.id === data.bloggerId);
-
-    if (!blogger) return null;
+    if (!data.blogger) return null;
 
     return {
         id: +(new Date()),
         title: data.title,
         shortDescription: data.shortDescription,
         content: data.content,
-        bloggerId: data.bloggerId,
-        bloggerName: blogger.name
+        bloggerId: data.blogger.id,
+        bloggerName: data.blogger.name
     }
 }
+
+export const getBlogger = (bloggers: Blogger[], bloggerId: number) => 
+    bloggers.find(b => b.id === bloggerId);

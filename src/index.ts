@@ -3,7 +3,7 @@ import bodyParser from "body-parser"
 import cors from "cors"
 import { bloggers, posts } from "./mockData"
 import { Blogger } from "./types"
-import { createPost, validateBlogger, validatePostField } from "./utils"
+import { createPost, getBlogger, validateBlogger, validatePostField } from "./utils"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -91,7 +91,9 @@ app.post("/posts", (req: Request, res: Response) => {
         bloggerId: req.body.bloggerId
     }
 
-    const errors = validatePostField(bodyFields);
+    const blogger = getBlogger(bloggers, +req.body.bloggerId)
+
+    const errors = validatePostField(bodyFields, blogger);
 
     if (errors) {
         res.status(400).send(errors)
@@ -100,15 +102,14 @@ app.post("/posts", (req: Request, res: Response) => {
     }
 
     const newPost = createPost({
-        bloggers,
+        blogger,
         title: req.body.title,
         shortDescription: req.body.shortDescription,
         content: req.body.content,
-        bloggerId: req.body.bloggerId
     })
 
     if (!newPost) {
-        res.send(404)
+        res.send(400)
 
         return;
     }

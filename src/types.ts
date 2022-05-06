@@ -34,6 +34,5 @@ export type CreatPostData = {
     title: string;
     shortDescription: string;
     content: string;
-    bloggerId: number;
-    bloggers: Blogger[];
+    blogger?: Blogger;
 }
