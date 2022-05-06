@@ -117,6 +117,18 @@ app.post("/posts", (req: Request, res: Response) => {
     res.status(201).send(newPost)
 })
 
+app.get("/posts/:id", (req: Request, res: Response) => {
+    const postId = +req.params.id;
+
+    const post = posts.find(p => p.id === postId);
+
+    if (!post) {
+        res.send(404)
+    } else {
+        res.status(200).send(post);
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server was starting on port: ${port}`);    
 })
