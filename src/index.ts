@@ -3,7 +3,7 @@ import bodyParser from "body-parser"
 import cors from "cors"
 import { bloggers, posts } from "./mockData"
 import { Blogger } from "./types"
-import { createPost, getBlogger, getPost, validateBlogger, validatePostField } from "./utils"
+import { createPost, getBlogger, getPost, getPostIndex, validateBlogger, validatePostField } from "./utils"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -159,6 +159,20 @@ app.put("/posts/:id", (req: Request, res: Response) => {
         post.shortDescription = bodyFields.shortDescription;
         post.content = bodyFields.content;
         post.bloggerId = bodyFields.bloggerId;
+
+        res.send(204);
+    }
+})
+
+app.delete("/posts/:id", (req: Request, res: Response) => {
+    const postId = +req.params.id;
+
+    const postIndex = getPostIndex(posts, postId)
+
+    if (postIndex < 0) {
+        res.send(404)
+    } else {
+        posts.splice(postIndex, 1)
 
         res.send(204);
     }

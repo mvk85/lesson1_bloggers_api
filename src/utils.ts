@@ -72,3 +72,6 @@ export const getBlogger = (bloggers: Blogger[], bloggerId: number) =>
 
 export const getPost = (posts: Post[], postId: number) => 
     posts.find(p => p.id === postId);
+
+export const getPostIndex = (posts: Post[], postId: number) => 
+    posts.findIndex(p => p.id === postId);
