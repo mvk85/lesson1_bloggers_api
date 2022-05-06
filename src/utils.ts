@@ -69,3 +69,6 @@ export const createPost = (data: CreatPostData): Post | null => {
 
 export const getBlogger = (bloggers: Blogger[], bloggerId: number) => 
     bloggers.find(b => b.id === bloggerId);
+
+export const getPost = (posts: Post[], postId: number) => 
+    posts.find(p => p.id === postId);

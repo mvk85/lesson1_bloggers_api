@@ -3,7 +3,7 @@ import bodyParser from "body-parser"
 import cors from "cors"
 import { bloggers, posts } from "./mockData"
 import { Blogger } from "./types"
-import { createPost, getBlogger, validateBlogger, validatePostField } from "./utils"
+import { createPost, getBlogger, getPost, validateBlogger, validatePostField } from "./utils"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -121,12 +121,46 @@ app.post("/posts", (req: Request, res: Response) => {
 app.get("/posts/:id", (req: Request, res: Response) => {
     const postId = +req.params.id;
 
-    const post = posts.find(p => p.id === postId);
+    const post = getPost(posts, postId)
 
     if (!post) {
         res.send(404)
     } else {
         res.status(200).send(post);
+    }
+})
+
+app.put("/posts/:id", (req: Request, res: Response) => {
+    const postId = +req.params.id;
+
+    const bodyFields = {
+        title: req.body.title,
+        shortDescription: req.body.shortDescription,
+        content: req.body.content,
+        bloggerId: req.body.bloggerId
+    }
+
+    const blogger = getBlogger(bloggers, +req.body.bloggerId)
+
+    const errors = validatePostField(bodyFields, blogger);
+
+    if (errors) {
+        res.status(400).send(errors)
+        
+        return;
+    }
+
+    const post = getPost(posts, postId);
+
+    if (!post) {
+        res.send(404)
+    } else {
+        post.title = bodyFields.title;
+        post.shortDescription = bodyFields.shortDescription;
+        post.content = bodyFields.content;
+        post.bloggerId = bodyFields.bloggerId;
+
+        res.send(204);
     }
 })
 
