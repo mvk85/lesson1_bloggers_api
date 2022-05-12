@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { bloggersRepository } from "../repository/bloggers-repository";
 
 const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
@@ -32,4 +33,10 @@ export const validationPostContent = body('content')
 export const validationPostBloggerId = body('bloggerId')
     .trim()
     .isLength({ min: 1, max: 100 })
-    .withMessage('bloggerId lenght should be between 1 and 100');
+    .withMessage('bloggerId lenght should be between 1 and 100')
+    .custom((value) => {
+        const blogger = bloggersRepository.getBloggerById(Number(value));
+
+        return !!blogger
+    })
+    .withMessage('blogger should exists');
