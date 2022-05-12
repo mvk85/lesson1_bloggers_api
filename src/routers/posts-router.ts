@@ -57,6 +57,13 @@ postsRouter.put("/:id",
     checkValidationErrors,
     (req: Request, res: Response) => {
         const postId = +req.params.id;
+        const postExist = postsRepository.getPostById(postId);
+
+        if (!postExist) {
+            res.sendStatus(404)
+
+            return;
+        }
 
         const bodyFields = {
             title: req.body.title,
