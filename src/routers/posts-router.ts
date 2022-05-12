@@ -56,7 +56,7 @@ postsRouter.put("/:id",
     validationPostBloggerId,
     checkValidationErrors,
     (req: Request, res: Response) => {
-        const postId = +req.params.id;
+        const postId = Number(req.params.id);
         const postExist = postsRepository.getPostById(postId);
 
         if (!postExist) {
@@ -69,7 +69,7 @@ postsRouter.put("/:id",
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            bloggerId: req.body.bloggerId
+            bloggerId: Number(req.body.bloggerId)
         }
 
         const isUpdated = postsRepository.updatePostById(postId, bodyFields)
