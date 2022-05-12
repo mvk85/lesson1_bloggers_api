@@ -1,55 +1,49 @@
 import { Request, Response, Router } from "express";
-import { bloggers, posts } from "../repository/db";
-import { createPost, getBlogger, getPost, getPostIndex, validatePostField } from "../utils";
+import { checkValidationErrors } from "../middleware/check-errors.middleware";
+import { validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
+import { postsRepository } from "../repository/posts-repository";
 
 export const postsRouter = Router();
 
 postsRouter.get("/", (req: Request, res: Response) => {
+    const posts = postsRepository.getPosts();
+
     res.status(200).send(posts)
 })
 
-postsRouter.post("/", (req: Request, res: Response) => {
-    const bodyFields = {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        bloggerId: req.body.bloggerId
+postsRouter.post("/", 
+    validationPostTitle,
+    validationPostShortDescription,
+    validationPostContent,
+    validationPostBloggerId,
+    checkValidationErrors,
+    (req: Request, res: Response) => {
+        const bodyFields = {
+            title: req.body.title,
+            shortDescription: req.body.shortDescription,
+            content: req.body.content,
+            bloggerId: +req.body.bloggerId
+        }
+
+        const newPost = postsRepository.createPost(bodyFields)
+
+        if (!newPost) {
+            res.sendStatus(400)
+
+            return;
+        }
+
+        res.status(201).send(newPost)
     }
-
-    const blogger = getBlogger(bloggers, +req.body.bloggerId)
-
-    const errors = validatePostField(bodyFields, blogger);
-
-    if (errors) {
-        res.status(400).send(errors)
-        
-        return;
-    }
-
-    const newPost = createPost({
-        blogger,
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-    })
-
-    if (!newPost) {
-        res.send(400)
-
-        return;
-    }
-
-    posts.push(newPost)
-    res.status(201).send(newPost)
-})
+)
 
 postsRouter.get("/:id", (req: Request, res: Response) => {
     const postId = +req.params.id;
 
-    const post = getPost(posts, postId)
+    const post = postsRepository.getPostById(postId)
 
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
     } else {
         res.status(200).send(post);
     }
@@ -65,40 +59,23 @@ postsRouter.put("/:id", (req: Request, res: Response) => {
         bloggerId: req.body.bloggerId
     }
 
-    const blogger = getBlogger(bloggers, +req.body.bloggerId)
+    const isUpdated = postsRepository.updatePostById(postId, bodyFields)
 
-    const errors = validatePostField(bodyFields, blogger);
-
-    if (errors) {
-        res.status(400).send(errors)
-        
-        return;
-    }
-
-    const post = getPost(posts, postId);
-
-    if (!post) {
-        res.send(404)
+    if (!isUpdated) {
+        res.sendStatus(400)
     } else {
-        post.title = bodyFields.title;
-        post.shortDescription = bodyFields.shortDescription;
-        post.content = bodyFields.content;
-        post.bloggerId = bodyFields.bloggerId;
-
-        res.send(204);
+        res.sendStatus(204);
     }
 })
 
 postsRouter.delete("/:id", (req: Request, res: Response) => {
     const postId = +req.params.id;
 
-    const postIndex = getPostIndex(posts, postId)
+    const isDeleted = postsRepository.deletePostById(postId)
 
-    if (postIndex < 0) {
+    if (!isDeleted) {
         res.send(404)
     } else {
-        posts.splice(postIndex, 1)
-
         res.send(204);
     }
 })
