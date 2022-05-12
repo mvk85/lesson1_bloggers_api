@@ -43,10 +43,6 @@ export const postsRepository = {
     },
 
     updatePostById(id: number, fields: PostCreateFields) {
-        const blogger = bloggersRepository.getBloggerById(fields.bloggerId);
-
-        if (!blogger) return false;
-        
         const post = posts.find(p => p.id === id);
 
         if (!post) return false;
