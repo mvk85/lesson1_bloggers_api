@@ -9,8 +9,8 @@ export const validationBloggerName = body('name')
 
 export const validationBloggerYoutubeUrl = body('youtubeUrl')
     .trim()
-    .isLength({ min: 1, max: 100 })
-    .withMessage('youtubeUrl lenght should be between 1 and 100')
+    .isLength({ max: 100 })
+    .withMessage('youtubeUrl lenght should be less than 100')
     .matches(regexUrl)
     .withMessage('youtubeUrl should be valid URL')
 
