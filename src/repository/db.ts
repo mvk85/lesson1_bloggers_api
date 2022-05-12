@@ -1,4 +1,4 @@
-import { Blogger, Post } from "./types";
+import { Blogger, Post } from "../types";
 
 export const bloggers: Blogger[] = [
     {

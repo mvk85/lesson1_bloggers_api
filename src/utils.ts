@@ -1,4 +1,4 @@
-import { bloggers } from "./mockData";
+import { bloggers } from "./repository/db";
 import { Blogger, CreatPostData, ErrorMessage, ErrorResponse, Post, PostCreateFields } from "./types";
 
 const generateErrorResponse = (errors: ErrorMessage[]) => ({
