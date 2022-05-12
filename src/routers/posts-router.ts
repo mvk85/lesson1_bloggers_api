@@ -49,24 +49,31 @@ postsRouter.get("/:id", (req: Request, res: Response) => {
     }
 })
 
-postsRouter.put("/:id", (req: Request, res: Response) => {
-    const postId = +req.params.id;
+postsRouter.put("/:id", 
+    validationPostTitle,
+    validationPostShortDescription,
+    validationPostContent,
+    validationPostBloggerId,
+    checkValidationErrors,
+    (req: Request, res: Response) => {
+        const postId = +req.params.id;
 
-    const bodyFields = {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        bloggerId: req.body.bloggerId
+        const bodyFields = {
+            title: req.body.title,
+            shortDescription: req.body.shortDescription,
+            content: req.body.content,
+            bloggerId: req.body.bloggerId
+        }
+
+        const isUpdated = postsRepository.updatePostById(postId, bodyFields)
+
+        if (!isUpdated) {
+            res.sendStatus(404)
+        } else {
+            res.sendStatus(204);
+        }
     }
-
-    const isUpdated = postsRepository.updatePostById(postId, bodyFields)
-
-    if (!isUpdated) {
-        res.sendStatus(400)
-    } else {
-        res.sendStatus(204);
-    }
-})
+)
 
 postsRouter.delete("/:id", (req: Request, res: Response) => {
     const postId = +req.params.id;

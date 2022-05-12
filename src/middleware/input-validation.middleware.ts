@@ -3,15 +3,11 @@ import { body } from "express-validator";
 const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
 export const validationBloggerName = body('name')
-    .isString()
-    .withMessage('name should be a string')
     .trim()
     .isLength({ min: 1, max: 15 })
     .withMessage('name lenght should be between 1 and 15');
 
 export const validationBloggerYoutubeUrl = body('youtubeUrl')
-    .isString()
-    .withMessage('youtubeUrl should be a string')
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage('youtubeUrl lenght should be between 1 and 100')
@@ -19,22 +15,16 @@ export const validationBloggerYoutubeUrl = body('youtubeUrl')
     .withMessage('youtubeUrl should be valid URL')
 
 export const validationPostTitle = body('title')
-    .isString()
-    .withMessage('title should be a string')
     .trim()
     .isLength({ min: 1, max: 30 })
     .withMessage('title lenght should be between 1 and 30');
 
 export const validationPostShortDescription = body('shortDescription')
-    .isString()
-    .withMessage('shortDescription should be a string')
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage('shortDescription lenght should be between 1 and 100');
 
 export const validationPostContent = body('content')
-    .isString()
-    .withMessage('content should be a string')
     .trim()
     .isLength({ min: 1, max: 1000 })
     .withMessage('content lenght should be between 1 and 1000');
