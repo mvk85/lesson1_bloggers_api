@@ -14,12 +14,12 @@ const authMethods = {
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const headers = req.headers;
     const authHeaderString = headers.authorization;
-    const authHeader = authHeaderString?.split(' ')[1];
+    const [authType, authHeader] = authHeaderString?.split(' ') || [];
     const isNeedAuth = authMethods[req.method as MethodsHttp]
 
     if (!isNeedAuth) {
         next()
-    } else if (isNeedAuth && authHeader === logopassBase64) {
+    } else if (isNeedAuth && authHeader === logopassBase64 && authType === 'Basic') {
         next();
     } else {
         res.sendStatus(401)
