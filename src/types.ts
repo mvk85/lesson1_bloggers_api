@@ -36,3 +36,10 @@ export type CreatPostData = {
     content: string;
     blogger?: Blogger;
 }
+
+export enum MethodsHttp {
+    GET = 'GET',
+    POST = 'POST',
+    PUT = 'PUT',
+    DELETE = 'DELETE'
+}
