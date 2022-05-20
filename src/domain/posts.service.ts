@@ -3,7 +3,7 @@ import { bloggersRepository } from "../repository/bloggers-repository";
 import { postsRepository } from "../repository/posts-repository";
 import { Post, PostCreateFields } from "../types";
 
-export const postService = {
+export const postsService = {
     async getPosts(filter: {} = {}): Promise<Post[]> {
         const posts = await postsRepository.getPosts(filter);
 
