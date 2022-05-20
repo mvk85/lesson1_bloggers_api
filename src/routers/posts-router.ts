@@ -5,8 +5,8 @@ import { postsRepository } from "../repository/posts-repository";
 
 export const postsRouter = Router();
 
-postsRouter.get("/", (req: Request, res: Response) => {
-    const posts = postsRepository.getPosts();
+postsRouter.get("/", async (req: Request, res: Response) => {
+    const posts = await postsRepository.getPosts();
 
     res.status(200).send(posts)
 })
@@ -17,7 +17,7 @@ postsRouter.post("/",
     validationPostContent,
     validationPostBloggerId,
     checkValidationErrors,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
         const bodyFields = {
             title: req.body.title,
             shortDescription: req.body.shortDescription,
@@ -25,7 +25,7 @@ postsRouter.post("/",
             bloggerId: +req.body.bloggerId
         }
 
-        const newPost = postsRepository.createPost(bodyFields)
+        const newPost = await postsRepository.createPost(bodyFields)
 
         if (!newPost) {
             res.sendStatus(400)
@@ -37,10 +37,10 @@ postsRouter.post("/",
     }
 )
 
-postsRouter.get("/:id", (req: Request, res: Response) => {
+postsRouter.get("/:id", async (req: Request, res: Response) => {
     const postId = +req.params.id;
 
-    const post = postsRepository.getPostById(postId)
+    const post = await postsRepository.getPostById(postId)
 
     if (!post) {
         res.sendStatus(404)
@@ -55,11 +55,11 @@ postsRouter.put("/:id",
     validationPostContent,
     validationPostBloggerId,
     checkValidationErrors,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
         const postId = Number(req.params.id);
-        const postExist = postsRepository.getPostById(postId);
+        const postForUpdate = await postsRepository.getPostById(postId);
 
-        if (!postExist) {
+        if (!postForUpdate) {
             res.sendStatus(404)
 
             return;
@@ -72,7 +72,7 @@ postsRouter.put("/:id",
             bloggerId: Number(req.body.bloggerId)
         }
 
-        const isUpdated = postsRepository.updatePostById(postId, bodyFields)
+        const isUpdated = await postsRepository.updatePostById(postId, bodyFields)
 
         if (!isUpdated) {
             res.sendStatus(400)
@@ -82,10 +82,10 @@ postsRouter.put("/:id",
     }
 )
 
-postsRouter.delete("/:id", (req: Request, res: Response) => {
+postsRouter.delete("/:id", async (req: Request, res: Response) => {
     const postId = +req.params.id;
 
-    const isDeleted = postsRepository.deletePostById(postId)
+    const isDeleted = await postsRepository.deletePostById(postId)
 
     if (!isDeleted) {
         res.send(404)

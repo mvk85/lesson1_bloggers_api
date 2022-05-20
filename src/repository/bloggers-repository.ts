@@ -1,49 +1,37 @@
 import { Blogger } from "../types";
-import { bloggers } from "./db"
+import { bloggersCollection } from "./db"
 
 export const bloggersRepository = {
-    getBloggers() {
+    async getBloggers(filter: {}): Promise<Blogger[]> {
+        const bloggers = await bloggersCollection.find(filter).toArray();
+
         return bloggers;
     },
 
-    getBloggerById(id: number) {
-        return bloggers.find(b => b.id === id)
+    async getBloggerById(id: number): Promise<Blogger | null> {
+        const blogger = await bloggersCollection.findOne({ id })
+
+        return blogger
     },
 
-    createBlogger(name: string, youtubeUrl: string) {
-        const newBloggers: Blogger = {
-            id: +(new Date()),
-            name,
-            youtubeUrl
-        }
+    async createBlogger(newBlogger: Blogger): Promise<Blogger | null> {
+        await bloggersCollection.insertOne(newBlogger)
 
-        bloggers.push(newBloggers);
-
-        return newBloggers;
+        return newBlogger;
     },
 
-    deleteBloggerById(id: number) {
-        const bloggerIndex = bloggers.findIndex(b => b.id === id)
+    async deleteBloggerById(id: number) {
+        const result = await bloggersCollection.deleteOne({ id })
 
-        if (bloggerIndex > -1) {
-            bloggers.splice(bloggerIndex, 1)
-
-            return true;
-        }
-
-        return false;
+        return result.deletedCount === 1;
     },
 
-    updateBloggerById(id: number, data: { name: string, youtubeUrl: string }) {
-        const blogger = bloggers.find(b => b.id === id)
+    async updateBloggerById(id: number, {name, youtubeUrl}: { name: string, youtubeUrl: string }) {
+        const result = await bloggersCollection.updateOne(
+            { id }, 
+            { $set: { name, youtubeUrl }}
+        )
 
-        if (!blogger) {
-            return null;
-        }
-        
-        blogger.name = data.name;
-        blogger.youtubeUrl = data.youtubeUrl;
-
-        return blogger;
+        return result.matchedCount === 1;
     }
 }

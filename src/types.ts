@@ -1,4 +1,7 @@
+import { ObjectId } from "mongodb";
+
 export type Blogger = {
+    _id: ObjectId,
     id: number;
     name: string;
     youtubeUrl: string;
@@ -15,6 +18,7 @@ export type ErrorResponse = {
 }
 
 export type Post = {
+    _id: ObjectId,
     id: number;
     title: string;
     shortDescription: string;
