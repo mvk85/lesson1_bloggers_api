@@ -2,13 +2,14 @@ import { Request, Response, Router } from "express";
 import { postsService } from "../domain/posts.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
+import { deleteObjectId, deleteObjectsId } from "../utils";
 
 export const postsRouter = Router();
 
 postsRouter.get("/", async (req: Request, res: Response) => {
     const posts = await postsService.getPosts();
 
-    res.status(200).send(posts)
+    res.status(200).send(deleteObjectsId(posts))
 })
 
 postsRouter.post("/", 
@@ -33,7 +34,7 @@ postsRouter.post("/",
             return;
         }
 
-        res.status(201).send(newPost)
+        res.status(201).send(deleteObjectId(newPost))
     }
 )
 
@@ -45,7 +46,7 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
     if (!post) {
         res.sendStatus(404)
     } else {
-        res.status(200).send(post);
+        res.status(200).send(deleteObjectId(post));
     }
 })
 
