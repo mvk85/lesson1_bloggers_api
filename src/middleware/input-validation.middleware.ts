@@ -34,9 +34,13 @@ export const validationPostBloggerId = body('bloggerId')
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage('bloggerId lenght should be between 1 and 100')
-    .custom((value) => {
-        const blogger = bloggersRepository.getBloggerById(Number(value));
+    .custom(async (value) => {
+        const blogger = await bloggersRepository.getBloggerById(Number(value));
 
-        return !!blogger
+        if (!blogger) {
+           return Promise.reject()
+        } else {
+            return Promise.resolve()
+        }
     })
     .withMessage('blogger should exists');

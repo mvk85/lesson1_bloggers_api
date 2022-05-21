@@ -12,12 +12,13 @@ const generateError = (field: string, message: string) => ({
     field
 })
 
-export const checkValidationErrors = (req: Request, res: Response, next: NextFunction) => {
-    const errorsExpressValidation = validationResult(req);
+export const checkValidationErrors = async (req: Request, res: Response, next: NextFunction) => {
+    const errorsExpressValidation = await validationResult(req);
     
     if (!errorsExpressValidation.isEmpty()) {
         const errors: ErrorMessage[] = [];
-        const errorsObject = errorsExpressValidation.array().forEach(e => {
+        
+        errorsExpressValidation.array().forEach(e => {
             const error = generateError(e.param, e.msg)
 
             errors.push(error)
