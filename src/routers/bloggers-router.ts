@@ -48,7 +48,7 @@ bloggersRouter.put("/:id",
     validationBloggerYoutubeUrl,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        const isUpdated = bloggersService.updateBloggerById(
+        const isUpdated = await bloggersService.updateBloggerById(
             Number(req.params.id),
             {
                 name: req.body.name,
