@@ -1,13 +1,25 @@
 import { ObjectId } from "mongodb";
 import { bloggersRepository } from "../repository/bloggers-repository";
 import { postsRepository } from "../repository/posts-repository";
-import { Post, PostCreateFields } from "../types";
+import { PaginationParams, Post, PostCreateFields, ResponsePosts } from "../types";
+import { generatePaginationData } from "../utils";
 
 export const postsService = {
-    async getPosts(filter: {} = {}): Promise<Post[]> {
-        const posts = await postsRepository.getPosts(filter);
+    async getPosts(paginationParams: PaginationParams): Promise<ResponsePosts> {
+        const postsCount = await postsRepository.getCountPosts();
+        const paginationData = generatePaginationData(paginationParams, postsCount)
 
-        return posts;
+        const posts = await postsRepository.getPosts(
+            paginationData.skip, paginationData.pageSize
+        );
+
+        return {
+            items: posts,
+            pagesCount: paginationData.pagesCount,
+            pageSize: paginationData.pageSize,
+            totalCount: postsCount,
+            page: paginationData.pageNumber
+        };
     },
 
     async getPostById(id: number): Promise<Post | null> {

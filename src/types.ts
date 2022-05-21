@@ -18,7 +18,7 @@ export type ErrorResponse = {
 }
 
 export type Post = {
-    _id: ObjectId,
+    _id?: ObjectId,
     id: number;
     title: string;
     shortDescription: string;
@@ -61,10 +61,17 @@ export type PaginationParams = {
     PageSize?: string;
 }
 
-export type ResponseBloggers = {
+export type PaginationData = {
     pagesCount: number;
     page: number;
     pageSize: number;
     totalCount: number;
+}
+
+export type ResponseBloggers = PaginationData & {
     items: Blogger[];
-  }
+}
+
+export type ResponsePosts = PaginationData & {
+    items: Post[];
+}
