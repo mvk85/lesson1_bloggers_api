@@ -1,12 +1,30 @@
-import { ObjectId, WithId } from "mongodb";
 import { bloggersRepository } from "../repository/bloggers-repository";
-import { Blogger } from "../types";
+import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers } from "../types";
+import { generatePaginationData } from "../utils";
 
 export const bloggersService = {
-    async getBloggers(filter: {} = {}): Promise<Blogger[]> {
-        const bloggers = await bloggersRepository.getBloggers(filter);
+    async getBloggers(
+        filterParams: FilterBloggersParams = {}, 
+        paginationParams: PaginationParams
+    ): Promise<ResponseBloggers> {
+        const filter = filterParams.SearchNameTerm 
+        ? { name: { $regex: filterParams.SearchNameTerm }} 
+        : {};
 
-        return bloggers;
+        const bloggersCount = await bloggersRepository.getCountBloggers(filter);
+        const paginationData = generatePaginationData(paginationParams, bloggersCount)
+
+        const bloggers = await bloggersRepository.getBloggers(
+            filter, paginationData.skip, paginationData.pageSize
+        );
+
+        return {
+            items: bloggers,
+            pagesCount: paginationData.pagesCount,
+            pageSize: paginationData.pageSize,
+            totalCount: bloggersCount,
+            page: paginationData.pageNumber
+        };
     },
 
     async getBloggerById(id: number): Promise<Blogger | null> {
@@ -17,7 +35,6 @@ export const bloggersService = {
 
     async createBlogger(name: string, youtubeUrl: string) {
         const newBloggers: Blogger = {
-            _id: new ObjectId(),
             id: +(new Date()),
             name,
             youtubeUrl

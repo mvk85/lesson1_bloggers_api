@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export type Blogger = {
-    _id: ObjectId,
+    _id?: ObjectId,
     id: number;
     name: string;
     youtubeUrl: string;
@@ -47,3 +47,24 @@ export enum MethodsHttp {
     PUT = 'PUT',
     DELETE = 'DELETE'
 }
+
+export type FilterBloggersParams = {
+    SearchNameTerm?: string;
+}
+
+export type FilterBloggers = {
+    name?: { $regex: string }
+}
+
+export type PaginationParams = {
+    PageNumber?: string;
+    PageSize?: string;
+}
+
+export type ResponseBloggers = {
+    pagesCount: number;
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    items: Blogger[];
+  }

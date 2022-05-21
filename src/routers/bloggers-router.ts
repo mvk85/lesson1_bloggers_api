@@ -2,14 +2,24 @@ import { Request, Response, Router } from "express";
 import { bloggersService } from "../domain/bloggers.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationBloggerYoutubeUrl, validationBloggerName } from "../middleware/input-validation.middleware";
-import { deleteObjectId, deleteObjectsId } from "../utils";
 
 export const bloggersRouter = Router()
 
 bloggersRouter.get("/", async (req: Request, res: Response) => {
-    const bloggers = await bloggersService.getBloggers();
+    const { 
+        SearchNameTerm, 
+        PageNumber, 
+        PageSize 
+    } = req.query;
+    const response = await bloggersService.getBloggers(
+        { SearchNameTerm: SearchNameTerm as string },
+        { 
+            PageNumber: PageNumber as string, 
+            PageSize: PageSize as string 
+        }
+    );
 
-    res.send(deleteObjectsId(bloggers))
+    res.send(response)
 })
 
 bloggersRouter.post("/", 
@@ -19,7 +29,7 @@ bloggersRouter.post("/",
     async (req: Request, res: Response) => {
         const newBlogger = await bloggersService.createBlogger(req.body.name, req.body.youtubeUrl)
 
-        res.status(201).send(deleteObjectId(newBlogger))
+        res.status(201).send(newBlogger)
     }
 )
 
@@ -27,7 +37,7 @@ bloggersRouter.get("/:id", async (req: Request, res: Response) => {
     const blogger = await bloggersService.getBloggerById(Number(req.params.id));
 
     if (blogger) {
-        res.status(200).send(deleteObjectId(blogger))
+        res.status(200).send(blogger)
     } else {
         res.sendStatus(404)
     }

@@ -1,11 +1,24 @@
-import { Blogger } from "../types";
+import { Blogger, FilterBloggers } from "../types";
+import { deleteObjectId, deleteObjectsId } from "../utils";
 import { bloggersCollection } from "./db"
 
 export const bloggersRepository = {
-    async getBloggers(filter: {}): Promise<Blogger[]> {
-        const bloggers = await bloggersCollection.find(filter).toArray();
+    async getBloggers(
+        filter: FilterBloggers, 
+        skip: number,
+        limit: number,
+    ): Promise<Blogger[]> {
+        const bloggers = await bloggersCollection.find(filter).skip(skip).limit(limit).toArray();
 
-        return bloggers;
+        return deleteObjectsId(bloggers) as Blogger[];
+    },
+
+    async getCountBloggers(
+        filter: FilterBloggers, 
+    ): Promise<number> {
+        const count = await bloggersCollection.count(filter)
+
+        return count;
     },
 
     async getBloggerById(id: number): Promise<Blogger | null> {
@@ -14,10 +27,10 @@ export const bloggersRepository = {
         return blogger
     },
 
-    async createBlogger(newBlogger: Blogger): Promise<Blogger | null> {
+    async createBlogger(newBlogger: Blogger): Promise<Blogger> {
         await bloggersCollection.insertOne(newBlogger)
 
-        return newBlogger;
+        return deleteObjectId<Blogger>(newBlogger);
     },
 
     async deleteBloggerById(id: number) {
