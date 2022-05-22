@@ -1,7 +1,9 @@
 import { Request, Response, Router } from "express";
 import { bloggersService } from "../domain/bloggers.service";
+import { postsService } from "../domain/posts.service";
+import { bloggerIdValidation } from "../middleware/blogger-id-validation";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationBloggerYoutubeUrl, validationBloggerName } from "../middleware/input-validation.middleware";
+import { validationBloggerYoutubeUrl, validationBloggerName, validationPostTitle, validationPostShortDescription, validationPostContent } from "../middleware/input-validation.middleware";
 
 export const bloggersRouter = Router()
 
@@ -75,26 +77,49 @@ bloggersRouter.delete("/:id", async (req: Request, res: Response) => {
     }
 })
 
-bloggersRouter.get("/:id/posts", async (req: Request, res: Response) => {
-    const blogger = await bloggersService.getBloggerById(Number(req.params.id));
+bloggersRouter.get("/:id/posts", 
+    bloggerIdValidation,
+    async (req: Request, res: Response) => {
+        const { 
+            PageNumber, 
+            PageSize 
+        } = req.query;
+        const response = await bloggersService.getPostsByBloggerId(
+            req.params.id,
+            { 
+                PageNumber: PageNumber as string, 
+                PageSize: PageSize as string 
+            }
+        );
 
-    if (!blogger) {
-        res.sendStatus(404)
+        res.send(response)
+    }
+)
 
-        return;
-    } 
-    
-    const { 
-        PageNumber, 
-        PageSize 
-    } = req.query;
-    const response = await bloggersService.getPostsByBloggerId(
-        req.params.id,
-        { 
-            PageNumber: PageNumber as string, 
-            PageSize: PageSize as string 
+bloggersRouter.post("/:id/posts", 
+    bloggerIdValidation,
+    validationPostTitle,
+    validationPostShortDescription,
+    validationPostContent,
+    checkValidationErrors,
+    async (req: Request, res: Response) => {
+        const bloggerId = req.params.id;
+
+        const bodyFields = {
+            title: req.body.title,
+            shortDescription: req.body.shortDescription,
+            content: req.body.content,
+            bloggerId: +bloggerId
         }
-    );
 
-    res.send(response)
-})
+        const newPost = await postsService.createPost(bodyFields)
+
+        if (!newPost) {
+            res.sendStatus(400)
+
+            return;
+        }
+
+        res.status(201).send(newPost)
+    }
+)
