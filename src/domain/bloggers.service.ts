@@ -1,5 +1,6 @@
 import { bloggersRepository } from "../repository/bloggers-repository";
-import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers } from "../types";
+import { postsRepository } from "../repository/posts-repository";
+import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
 import { generatePaginationData } from "../utils";
 
 export const bloggersService = {
@@ -23,6 +24,27 @@ export const bloggersService = {
             pagesCount: paginationData.pagesCount,
             pageSize: paginationData.pageSize,
             totalCount: bloggersCount,
+            page: paginationData.pageNumber
+        };
+    },
+
+    async getPostsByBloggerId(
+        bloggerId: string, 
+        paginationParams: PaginationParams
+    ): Promise<ResponsePostsByBloggerId> {
+        const filter = { bloggerId: Number(bloggerId) };
+        const postsCount = await postsRepository.getCountPosts(filter);
+        const paginationData = generatePaginationData(paginationParams, postsCount)
+
+        const posts = await postsRepository.getPosts(
+            filter, paginationData.skip, paginationData.pageSize
+        );
+
+        return {
+            items: posts,
+            pagesCount: paginationData.pagesCount,
+            pageSize: paginationData.pageSize,
+            totalCount: postsCount,
             page: paginationData.pageNumber
         };
     },

@@ -75,3 +75,7 @@ export type ResponseBloggers = PaginationData & {
 export type ResponsePosts = PaginationData & {
     items: Post[];
 }
+
+export type ResponsePostsByBloggerId = PaginationData & {
+    items: Post[];
+}

@@ -74,3 +74,19 @@ bloggersRouter.delete("/:id", async (req: Request, res: Response) => {
         res.send(204)
     }
 })
+
+bloggersRouter.get("/:id/posts", async (req: Request, res: Response) => {
+    const { 
+        PageNumber, 
+        PageSize 
+    } = req.query;
+    const response = await bloggersService.getPostsByBloggerId(
+        req.params.id,
+        { 
+            PageNumber: PageNumber as string, 
+            PageSize: PageSize as string 
+        }
+    );
+
+    res.send(response)
+})

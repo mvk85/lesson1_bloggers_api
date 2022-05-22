@@ -10,7 +10,7 @@ export const postsService = {
         const paginationData = generatePaginationData(paginationParams, postsCount)
 
         const posts = await postsRepository.getPosts(
-            paginationData.skip, paginationData.pageSize
+            {}, paginationData.skip, paginationData.pageSize
         );
 
         return {

@@ -3,14 +3,14 @@ import { deleteObjectId, deleteObjectsId } from "../utils";
 import { postsCollection } from "./db"
 
 export const postsRepository = {
-    async getPosts(skip: number, limit: number,): Promise<Post[]> {
-        const posts = await postsCollection.find({}).skip(skip).limit(limit).toArray();
+    async getPosts(filter: object = {}, skip: number, limit: number,): Promise<Post[]> {
+        const posts = await postsCollection.find(filter).skip(skip).limit(limit).toArray();
 
         return deleteObjectsId(posts) as Post[];
     },
 
-    async getCountPosts(): Promise<number> {
-        const count = await postsCollection.count({})
+    async getCountPosts(filter: object = {}): Promise<number> {
+        const count = await postsCollection.count(filter)
 
         return count;
     },
