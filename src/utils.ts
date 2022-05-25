@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "./const";
 import { PaginationParams } from "./types";
 

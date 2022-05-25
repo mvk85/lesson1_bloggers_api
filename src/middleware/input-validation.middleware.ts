@@ -44,3 +44,16 @@ export const validationPostBloggerId = body('bloggerId')
         }
     })
     .withMessage('blogger should exists');
+
+
+// users
+
+export const validationUserLogin = body('login')
+    .trim()
+    .isLength({ min: 3, max: 10})
+    .withMessage('login length should be between 3 and 10')
+
+export const validationUserPassword = body('password')
+    .trim()
+    .isLength({ min: 6, max: 20})
+    .withMessage('password length should be between 6 and 20')

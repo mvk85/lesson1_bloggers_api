@@ -1,20 +1,22 @@
 import {MongoClient} from 'mongodb'
-import { Blogger, Post } from "../types";
+import { Blogger, Post, User } from "../types";
 
 const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
 const nameDb = 'social';
 
-export const client = new MongoClient(mongoUri);
+const client = new MongoClient(mongoUri);
+const db = client.db(nameDb);
 
-export const bloggersCollection = client.db(nameDb).collection<Blogger>('bloggers')
-export const postsCollection = client.db(nameDb).collection<Post>('posts')
+export const bloggersCollection = db.collection<Blogger>('bloggers')
+export const postsCollection = db.collection<Post>('posts')
+export const usersCollection = db.collection<User>('users')
 
 export async function runDb() {
     try {
         // Connect the client to the server
         await client.connect();
         // Establish and verify connection
-        await client.db(nameDb).command({ ping: 1 });
+        await db.command({ ping: 1 });
         console.log("Connected successfully to mongo server");
     } catch {
         console.log("Can't connect to db");

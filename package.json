@@ -12,6 +12,7 @@
     "start": "node -r dotenv/config dist/index.js"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -20,6 +21,7 @@
     "mongodb": "^4.6.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.31",

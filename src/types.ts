@@ -1,11 +1,10 @@
-import { ObjectId } from "mongodb";
+import { WithId } from "mongodb";
 
-export type Blogger = {
-    _id?: ObjectId,
+export type Blogger = WithId<{
     id: number;
     name: string;
     youtubeUrl: string;
-}
+}>
 
 export type ErrorMessage = {
     message: string;
@@ -17,15 +16,23 @@ export type ErrorResponse = {
     resultCode: number;
 }
 
-export type Post = {
-    _id?: ObjectId,
+export type Post = WithId<{
     id: number;
     title: string;
     shortDescription: string;
     content: string;
     bloggerId: number;
     bloggerName: string;
-}
+}>
+
+export type User = WithId<{
+    passwordHash: string
+} & UserItem>
+
+export type UserItem = WithId<{
+    id:	number;
+    login: string;
+}>
 
 export type PostCreateFields = {
     title: string;
@@ -39,6 +46,11 @@ export type CreatPostData = {
     shortDescription: string;
     content: string;
     blogger?: Blogger;
+}
+
+export type UserCreateFields = {
+    login: string;
+    password: string;
 }
 
 export enum MethodsHttp {
@@ -78,4 +90,8 @@ export type ResponsePosts = PaginationData & {
 
 export type ResponsePostsByBloggerId = PaginationData & {
     items: Post[];
+}
+
+export type ResponseUsers = PaginationData & {
+    items: User[];
 }

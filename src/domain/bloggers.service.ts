@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { bloggersRepository } from "../repository/bloggers-repository";
 import { postsRepository } from "../repository/posts-repository";
 import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
@@ -57,6 +58,7 @@ export const bloggersService = {
 
     async createBlogger(name: string, youtubeUrl: string) {
         const newBloggers: Blogger = {
+            _id: new ObjectId(),
             id: +(new Date()),
             name,
             youtubeUrl

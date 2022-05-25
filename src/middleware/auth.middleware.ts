@@ -11,7 +11,7 @@ const authMethods = {
     [MethodsHttp.GET]: false
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const checkAdminBasicAuth = (req: Request, res: Response, next: NextFunction) => {
     const headers = req.headers;
     const authHeaderString = headers.authorization;
     const [authType, authHeader] = authHeaderString?.split(' ') || [];
