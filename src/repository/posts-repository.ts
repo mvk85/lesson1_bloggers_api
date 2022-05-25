@@ -1,12 +1,12 @@
+import { removeObjectIdOption } from "../const";
 import { Post, PostCreateFields } from "../types";
-import { deleteObjectId, deleteObjectsId } from "../utils";
 import { postsCollection } from "./db"
 
 export const postsRepository = {
     async getPosts(filter: object = {}, skip: number, limit: number,): Promise<Post[]> {
-        const posts = await postsCollection.find(filter).skip(skip).limit(limit).toArray();
+        const posts = await postsCollection.find(filter, removeObjectIdOption).skip(skip).limit(limit).toArray();
 
-        return deleteObjectsId(posts) as Post[];
+        return posts;
     },
 
     async getCountPosts(filter: object = {}): Promise<number> {
@@ -16,15 +16,17 @@ export const postsRepository = {
     },
 
     async getPostById(id: number): Promise<Post | null> {
-        const post = await postsCollection.findOne({ id })
+        const post = await postsCollection.findOne({ id }, removeObjectIdOption)
         
-        return post ? deleteObjectId(post) : post;
+        return post;
     },
 
     async createPost(newPost: Post): Promise<Post | null> {
         await postsCollection.insertOne(newPost)
+        
+        const post = await postsCollection.findOne({ id: newPost.id }, removeObjectIdOption)
 
-        return deleteObjectId(newPost);
+        return post;
     },
 
     async deletePostById(id: number) {

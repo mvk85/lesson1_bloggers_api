@@ -1,5 +1,5 @@
+import { removeObjectIdOption } from "../const";
 import { Blogger, FilterBloggers } from "../types";
-import { deleteObjectId, deleteObjectsId } from "../utils";
 import { bloggersCollection } from "./db"
 
 export const bloggersRepository = {
@@ -8,9 +8,9 @@ export const bloggersRepository = {
         skip: number,
         limit: number,
     ): Promise<Blogger[]> {
-        const bloggers = await bloggersCollection.find(filter).skip(skip).limit(limit).toArray();
+        const bloggers = await bloggersCollection.find(filter, removeObjectIdOption).skip(skip).limit(limit).toArray();
 
-        return deleteObjectsId(bloggers) as Blogger[];
+        return bloggers;
     },
 
     async getCountBloggers(
@@ -22,15 +22,17 @@ export const bloggersRepository = {
     },
 
     async getBloggerById(id: number): Promise<Blogger | null> {
-        const blogger = await bloggersCollection.findOne({ id })
+        const blogger = await bloggersCollection.findOne({ id }, removeObjectIdOption)
 
-        return blogger ? deleteObjectId<Blogger>(blogger) : blogger
+        return blogger;
     },
 
-    async createBlogger(newBlogger: Blogger): Promise<Blogger> {
+    async createBlogger(newBlogger: Blogger): Promise<Blogger | null> {
         await bloggersCollection.insertOne(newBlogger)
 
-        return deleteObjectId<Blogger>(newBlogger);
+        const blogger = await bloggersCollection.findOne({ id: newBlogger.id }, removeObjectIdOption)
+
+        return blogger;
     },
 
     async deleteBloggerById(id: number) {
