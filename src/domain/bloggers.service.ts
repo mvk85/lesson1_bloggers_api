@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { bloggersRepository } from "../repository/bloggers-repository";
 import { postsRepository } from "../repository/posts-repository";
 import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
-import { generatePaginationData } from "../utils";
+import { generateCustomId, generatePaginationData } from "../utils";
 
 export const bloggersService = {
     async getBloggers(
@@ -33,7 +33,7 @@ export const bloggersService = {
         bloggerId: string, 
         paginationParams: PaginationParams
     ): Promise<ResponsePostsByBloggerId> {
-        const filter = { bloggerId: Number(bloggerId) };
+        const filter = { bloggerId };
         const postsCount = await postsRepository.getCountPosts(filter);
         const paginationData = generatePaginationData(paginationParams, postsCount)
 
@@ -50,7 +50,7 @@ export const bloggersService = {
         };
     },
 
-    async getBloggerById(id: number): Promise<Blogger | null> {
+    async getBloggerById(id: string): Promise<Blogger | null> {
         const blogger = await bloggersRepository.getBloggerById(id)
 
         return blogger
@@ -59,23 +59,23 @@ export const bloggersService = {
     async createBlogger(name: string, youtubeUrl: string) {
         const newBloggers: Blogger = {
             _id: new ObjectId(),
-            id: +(new Date()),
+            id: generateCustomId(),
             name,
             youtubeUrl
         }
 
-        await bloggersRepository.createBlogger(newBloggers)
+        const createdBlogger = await bloggersRepository.createBlogger(newBloggers)
 
-        return newBloggers;
+        return createdBlogger;
     },
 
-    async deleteBloggerById(id: number) {
+    async deleteBloggerById(id: string) {
         const isDeleted = await bloggersRepository.deleteBloggerById(id);
 
         return isDeleted;
     },
 
-    async updateBloggerById(id: number, data: { name: string, youtubeUrl: string }) {
+    async updateBloggerById(id: string, data: { name: string, youtubeUrl: string }) {
         const isUpdated = await bloggersRepository.updateBloggerById(id, data);
 
         return isUpdated;

@@ -31,7 +31,7 @@ postsRouter.post("/",
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            bloggerId: +req.body.bloggerId
+            bloggerId: req.body.bloggerId
         }
 
         const newPost = await postsService.createPost(bodyFields)
@@ -47,7 +47,7 @@ postsRouter.post("/",
 )
 
 postsRouter.get("/:id", async (req: Request, res: Response) => {
-    const postId = +req.params.id;
+    const postId = req.params.id;
 
     const post = await postsService.getPostById(postId)
 
@@ -65,7 +65,7 @@ postsRouter.put("/:id",
     validationPostBloggerId,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        const postId = Number(req.params.id);
+        const postId = req.params.id;
         const postForUpdate = await postsService.getPostById(postId);
 
         if (!postForUpdate) {
@@ -78,7 +78,7 @@ postsRouter.put("/:id",
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            bloggerId: Number(req.body.bloggerId)
+            bloggerId: req.body.bloggerId
         }
 
         const isUpdated = await postsService.updatePostById(postId, bodyFields)
@@ -92,7 +92,7 @@ postsRouter.put("/:id",
 )
 
 postsRouter.delete("/:id", async (req: Request, res: Response) => {
-    const postId = +req.params.id;
+    const postId = req.params.id;
 
     const isDeleted = await postsService.deletePostById(postId)
 

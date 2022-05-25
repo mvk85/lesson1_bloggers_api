@@ -30,7 +30,7 @@ export const usersRepository = {
        return user;
    },
 
-   async deleteUserByid(id: number): Promise<boolean> {
+   async deleteUserByid(id: string): Promise<boolean> {
        const result = await usersCollection.deleteOne({ id })
        
        return result.deletedCount === 1;

@@ -35,7 +35,7 @@ export const validationPostBloggerId = body('bloggerId')
     .isLength({ min: 1, max: 100 })
     .withMessage('bloggerId lenght should be between 1 and 100')
     .custom(async (value) => {
-        const blogger = await bloggersRepository.getBloggerById(Number(value));
+        const blogger = await bloggersRepository.getBloggerById(String(value));
 
         if (!blogger) {
            return Promise.reject()

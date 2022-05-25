@@ -3,7 +3,7 @@ import { bloggersService } from "../domain/bloggers.service";
 
 
 export const bloggerIdValidation = async (req: Request, res: Response, next: NextFunction) => {
-    const blogger = await bloggersService.getBloggerById(Number(req.params.id));
+    const blogger = await bloggersService.getBloggerById(req.params.id);
 
     if (!blogger) {
         res.sendStatus(404)

@@ -15,7 +15,7 @@ export const postsRepository = {
         return count;
     },
 
-    async getPostById(id: number): Promise<Post | null> {
+    async getPostById(id: string): Promise<Post | null> {
         const post = await postsCollection.findOne({ id }, removeObjectIdOption)
         
         return post;
@@ -29,13 +29,13 @@ export const postsRepository = {
         return post;
     },
 
-    async deletePostById(id: number) {
+    async deletePostById(id: string) {
         const result = await postsCollection.deleteOne({ id })
 
         return result.deletedCount === 1;        
     },
 
-    async updatePostById(id: number, fields: PostCreateFields) {
+    async updatePostById(id: string, fields: PostCreateFields) {
         const result = await postsCollection.updateOne({ id }, {$set: { ...fields }});
 
         return result.matchedCount === 1;

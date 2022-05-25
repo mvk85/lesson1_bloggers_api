@@ -24,3 +24,7 @@ export function generatePaginationData(
         skip
     }
 }
+
+export function generateCustomId() {
+    return String(+(new Date()))
+}

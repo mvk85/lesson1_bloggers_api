@@ -1,7 +1,9 @@
 import { WithId } from "mongodb";
 
+type CustomIdType = string;
+
 export type Blogger = WithId<{
-    id: number;
+    id: CustomIdType;
     name: string;
     youtubeUrl: string;
 }>
@@ -17,11 +19,11 @@ export type ErrorResponse = {
 }
 
 export type Post = WithId<{
-    id: number;
+    id: CustomIdType;
     title: string;
     shortDescription: string;
     content: string;
-    bloggerId: number;
+    bloggerId: string;
     bloggerName: string;
 }>
 
@@ -30,7 +32,7 @@ export type User = WithId<{
 } & UserItem>
 
 export type UserItem = WithId<{
-    id:	number;
+    id:	CustomIdType;
     login: string;
 }>
 
@@ -38,7 +40,7 @@ export type PostCreateFields = {
     title: string;
     shortDescription: string;
     content: string;
-    bloggerId: number;
+    bloggerId: string;
 }
 
 export type CreatPostData = {

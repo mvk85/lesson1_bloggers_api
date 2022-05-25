@@ -36,7 +36,7 @@ bloggersRouter.post("/",
 )
 
 bloggersRouter.get("/:id", async (req: Request, res: Response) => {
-    const blogger = await bloggersService.getBloggerById(Number(req.params.id));
+    const blogger = await bloggersService.getBloggerById(req.params.id);
 
     if (blogger) {
         res.status(200).send(blogger)
@@ -51,7 +51,7 @@ bloggersRouter.put("/:id",
     checkValidationErrors,
     async (req: Request, res: Response) => {
         const isUpdated = await bloggersService.updateBloggerById(
-            Number(req.params.id),
+            req.params.id,
             {
                 name: req.body.name,
                 youtubeUrl: req.body.youtubeUrl
@@ -68,7 +68,7 @@ bloggersRouter.put("/:id",
 )
 
 bloggersRouter.delete("/:id", async (req: Request, res: Response) => {
-    const isDeleted = await bloggersService.deleteBloggerById(Number(req.params.id));
+    const isDeleted = await bloggersService.deleteBloggerById(req.params.id);
     
     if (!isDeleted) {
         res.send(404)
@@ -109,7 +109,7 @@ bloggersRouter.post("/:id/posts",
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            bloggerId: +bloggerId
+            bloggerId
         }
 
         const newPost = await postsService.createPost(bodyFields)

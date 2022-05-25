@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { bloggersRepository } from "../repository/bloggers-repository";
 import { postsRepository } from "../repository/posts-repository";
 import { PaginationParams, Post, PostCreateFields, ResponsePosts } from "../types";
-import { generatePaginationData } from "../utils";
+import { generateCustomId, generatePaginationData } from "../utils";
 
 export const postsService = {
     async getPosts(paginationParams: PaginationParams): Promise<ResponsePosts> {
@@ -22,7 +22,7 @@ export const postsService = {
         };
     },
 
-    async getPostById(id: number): Promise<Post | null> {
+    async getPostById(id: string): Promise<Post | null> {
         const post = await postsRepository.getPostById(id);
         
         return post;
@@ -35,7 +35,7 @@ export const postsService = {
 
         const newPosts: Post = {
             _id: new ObjectId(),
-            id: +(new Date()),
+            id: generateCustomId(),
             title: fields.title,
             shortDescription: fields.shortDescription,
             content: fields.content,
@@ -43,18 +43,18 @@ export const postsService = {
             bloggerName: blogger.name
         }
 
-        await postsRepository.createPost(newPosts)
+        const createdPost = await postsRepository.createPost(newPosts)
 
-        return newPosts;
+        return createdPost;
     },
 
-    async deletePostById(id: number) {
+    async deletePostById(id: string) {
         const isDeleted = await postsRepository.deletePostById(id);
 
         return isDeleted;        
     },
 
-    async updatePostById(id: number, fields: PostCreateFields) {
+    async updatePostById(id: string, fields: PostCreateFields) {
         const isUpdated = await postsRepository.updatePostById(id, fields);
 
         return isUpdated;

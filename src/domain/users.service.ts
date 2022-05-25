@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { usersRepository } from "../repository/users-repository";
 import { PaginationParams, ResponseUsers, User, UserCreateFields } from "../types";
-import { generatePaginationData } from "../utils";
+import { generateCustomId, generatePaginationData } from "../utils";
 import { authService } from "./auth.service";
 
 export const usersService = {
@@ -24,7 +24,7 @@ export const usersService = {
         const passwordHash = await authService.generateHash(fields.password)
         const newUser: User = {
             _id: new ObjectId(),
-            id: +(new Date()),
+            id: generateCustomId(),
             login: fields.login,
             passwordHash
         }
@@ -35,7 +35,7 @@ export const usersService = {
     },
 
     async deleteUserById(id: string) {
-        const isDeleted = await usersRepository.deleteUserByid(Number(id));
+        const isDeleted = await usersRepository.deleteUserByid(id);
 
         return isDeleted;
     }

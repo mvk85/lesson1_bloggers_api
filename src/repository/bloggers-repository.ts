@@ -21,7 +21,7 @@ export const bloggersRepository = {
         return count;
     },
 
-    async getBloggerById(id: number): Promise<Blogger | null> {
+    async getBloggerById(id: string): Promise<Blogger | null> {
         const blogger = await bloggersCollection.findOne({ id }, removeObjectIdOption)
 
         return blogger;
@@ -35,13 +35,13 @@ export const bloggersRepository = {
         return blogger;
     },
 
-    async deleteBloggerById(id: number) {
+    async deleteBloggerById(id: string) {
         const result = await bloggersCollection.deleteOne({ id })
 
         return result.deletedCount === 1;
     },
 
-    async updateBloggerById(id: number, {name, youtubeUrl}: { name: string, youtubeUrl: string }) {
+    async updateBloggerById(id: string, {name, youtubeUrl}: { name: string, youtubeUrl: string }) {
         const result = await bloggersCollection.updateOne(
             { id }, 
             { $set: { name, youtubeUrl }}
