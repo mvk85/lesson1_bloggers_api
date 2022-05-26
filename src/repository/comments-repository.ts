@@ -11,7 +11,7 @@ export const commentsRepository = {
 
     async getComments(filter: FilterComments, skip: number, limit: number) {
         const comments = await commentsCollection
-            .find(filter, removeObjectIdOption)
+            .find(filter, { projection: {_id: false, postId: false }})
             .skip(skip)
             .limit(limit)
             .toArray();
