@@ -109,6 +109,7 @@ postsRouter.delete("/:id",
 postsRouter.post('/:postId/comments', 
     checkUserBearerAuth,
     validationCommentContent,
+    checkValidationErrors,
     async (req: Request, res: Response) => {
         const content = req.body.content;
 
