@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { postsService } from "../domain/posts.service";
+import { checkAdminBasicAuth } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
 
@@ -20,7 +21,8 @@ postsRouter.get("/", async (req: Request, res: Response) => {
     res.status(200).send(response)
 })
 
-postsRouter.post("/", 
+postsRouter.post("/",
+    checkAdminBasicAuth,
     validationPostTitle,
     validationPostShortDescription,
     validationPostContent,
@@ -58,7 +60,8 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
     }
 })
 
-postsRouter.put("/:id", 
+postsRouter.put("/:id",
+    checkAdminBasicAuth,
     validationPostTitle,
     validationPostShortDescription,
     validationPostContent,
@@ -91,14 +94,17 @@ postsRouter.put("/:id",
     }
 )
 
-postsRouter.delete("/:id", async (req: Request, res: Response) => {
-    const postId = req.params.id;
+postsRouter.delete("/:id", 
+    checkAdminBasicAuth,
+    async (req: Request, res: Response) => {
+        const postId = req.params.id;
 
-    const isDeleted = await postsService.deletePostById(postId)
+        const isDeleted = await postsService.deletePostById(postId)
 
-    if (!isDeleted) {
-        res.send(404)
-    } else {
-        res.send(204);
+        if (!isDeleted) {
+            res.send(404)
+        } else {
+            res.send(204);
+        }
     }
-})
+)
