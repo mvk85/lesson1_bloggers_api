@@ -1,16 +1,13 @@
 import { Request, Response, Router } from "express";
 import { postsService } from "../domain/posts.service";
-import { checkAdminBasicAuth } from "../middleware/auth.middleware";
+import { checkAdminBasicAuth, checkUserBearerAuth } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
+import { validationCommentContent, validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
 
 export const postsRouter = Router();
 
 postsRouter.get("/", async (req: Request, res: Response) => {
-    const { 
-        PageNumber, 
-        PageSize 
-    } = req.query;
+    const { PageNumber, PageSize } = req.query;
     const response = await postsService.getPosts(
         { 
             PageNumber: PageNumber as string, 
@@ -108,3 +105,39 @@ postsRouter.delete("/:id",
         }
     }
 )
+
+postsRouter.post('/:postId/comments', 
+    checkUserBearerAuth,
+    validationCommentContent,
+    async (req: Request, res: Response) => {
+        const content = req.body.content;
+
+        const newComment = await postsService.createComment({
+            content,
+            userId: req.user!.userId,
+            userLogin: req.user!.userLogin,
+            postId: req.params.postId,
+        })
+
+        if (!newComment) {
+            res.sendStatus(400)
+
+            return;
+        }
+
+        res.status(201).send(newComment)
+    }
+)
+
+postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
+    const { PageNumber, PageSize } = req.query;
+    const response = await postsService.getCommentsByPostId(
+        req.params.postId,
+        { 
+            PageNumber: PageNumber as string, 
+            PageSize: PageSize as string 
+        }
+    );
+
+    res.status(200).send(response)
+})

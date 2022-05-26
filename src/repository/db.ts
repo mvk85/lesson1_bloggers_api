@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb'
-import { Blogger, Post, User } from "../types";
+import { Blogger, Comment, Post, User } from "../types";
 
 const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
 const nameDb = 'social';
@@ -10,6 +10,7 @@ const db = client.db(nameDb);
 export const bloggersCollection = db.collection<Blogger>('bloggers')
 export const postsCollection = db.collection<Post>('posts')
 export const usersCollection = db.collection<User>('users')
+export const commentsCollection = db.collection<Comment>('comments')
 
 export async function runDb() {
     try {

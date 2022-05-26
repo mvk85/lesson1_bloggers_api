@@ -40,5 +40,11 @@ export const usersRepository = {
        const user = await usersCollection.findOne({ login })
        
        return user;
+   },
+
+   async getUserByUserId(id: string): Promise<User | null> {
+       const user = await usersCollection.findOne({ id })
+       
+       return user;
    }
 }

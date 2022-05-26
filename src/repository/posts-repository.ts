@@ -39,5 +39,5 @@ export const postsRepository = {
         const result = await postsCollection.updateOne({ id }, {$set: { ...fields }});
 
         return result.matchedCount === 1;
-    }
+    },
 }

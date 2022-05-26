@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { usersRepository } from "../repository/users-repository";
 import { jwtUtility } from "../utils";
 
 const logopass = 'admin:qwerty';
@@ -27,7 +28,19 @@ export const checkUserBearerAuth = async (req: Request, res: Response, next: Nex
 
     const userId = await jwtUtility.getUserIdByToken(token);
 
-    if (userId) {
+    if (!userId) {
+        res.sendStatus(401)
+
+        return;
+    }
+
+    const user = await usersRepository.getUserByUserId(userId);
+
+    if (user) {
+        req.user = { 
+            userId: user.id,
+            userLogin: user.login
+        }
         next()
     } else {
         res.sendStatus(401)

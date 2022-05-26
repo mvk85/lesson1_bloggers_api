@@ -36,6 +36,17 @@ export type UserItem = WithId<{
     login: string;
 }>
 
+export type Comment = WithId<{
+    id: string;
+    content: string;
+    userId: string;
+    userLogin: string;
+    addedAt: string;
+    postId: string;
+}>
+
+export type ResponseCommentType = Omit<Comment, 'postId'>
+
 export type PostCreateFields = {
     title: string;
     shortDescription: string;
@@ -70,6 +81,10 @@ export type FilterBloggers = {
     name?: { $regex: string }
 }
 
+export type FilterComments = {
+    postId?: string
+}
+
 export type PaginationParams = {
     PageNumber?: string;
     PageSize?: string;
@@ -88,6 +103,10 @@ export type ResponseBloggers = PaginationData & {
 
 export type ResponsePosts = PaginationData & {
     items: Post[];
+}
+
+export type ResponseCommentsByPostId = PaginationData & {
+    items: ResponseCommentType[];
 }
 
 export type ResponsePostsByBloggerId = PaginationData & {

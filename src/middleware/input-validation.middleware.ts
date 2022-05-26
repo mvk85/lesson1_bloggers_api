@@ -57,3 +57,11 @@ export const validationUserPassword = body('password')
     .trim()
     .isLength({ min: 6, max: 20})
     .withMessage('password length should be between 6 and 20')
+
+
+// comments
+
+export const validationCommentContent = body('content')
+    .trim()
+    .isLength({ min: 20, max: 300 })
+    .withMessage('content lenght should be between 20 and 300');
