@@ -1,5 +1,7 @@
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "./const";
-import { PaginationParams } from "./types";
+import { settings } from "./setting";
+import { PaginationParams, User } from "./types";
 
 export function generatePaginationData(
     paginationParams: PaginationParams,
@@ -27,4 +29,36 @@ export function generatePaginationData(
 
 export function generateCustomId() {
     return String(+(new Date()))
+}
+
+export const jwtUtility = {
+    /**
+     * @param user
+     * @return Returns JWT-token
+     */
+    createJWT(user: User) {
+        const payload = { userId: user.id }
+        const secretOrPrivateKey = settings.JWT_SECRET;
+        const options: SignOptions = {
+            expiresIn: '10d',
+        }
+
+        const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
+
+        return jwtToken
+    },
+
+    /**
+     * @param token jwt
+     * @return userId or null
+     */
+    async getUserIdByToken(token: string) {
+        try {
+            const result: any = jwt.verify(token, settings.JWT_SECRET)
+
+            return result.userId;
+        } catch(error) {
+            return null
+        }
+    }
 }

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { MethodsHttp } from "../types";
+import { jwtUtility } from "../utils";
 
 const logopass = 'admin:qwerty';
 const logopassBase64 = Buffer.from(logopass).toString('base64')
@@ -23,5 +24,25 @@ export const checkAdminBasicAuth = (req: Request, res: Response, next: NextFunct
         next();
     } else {
         res.sendStatus(401)
+    }
+}
+
+export const checkUserBearerAuth = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.headers.authorization) {
+        res.sendStatus(401)
+
+        return;
+    }
+
+    const token = req.headers.authorization.split(' ')[1]
+
+    const userId = await jwtUtility.getUserIdByToken(token);
+
+    if (userId) {
+        next()
+    } else {
+        res.sendStatus(401)
+
+        return;
     }
 }

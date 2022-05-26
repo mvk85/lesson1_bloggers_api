@@ -6,6 +6,7 @@ import { postsRouter } from "./routers/posts-router"
 import { checkAdminBasicAuth } from "./middleware/auth.middleware"
 import { runDb } from "./repository/db"
 import { usersRouter } from "./routers/users-router"
+import { authRouter } from "./routers/auth-router"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -19,6 +20,8 @@ app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);
 
 app.use('/users', usersRouter);
+
+app.use('/auth', authRouter)
 
 const startApp = async () => {
     await runDb()

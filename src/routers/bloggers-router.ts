@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { bloggersService } from "../domain/bloggers.service";
 import { postsService } from "../domain/posts.service";
+import { checkUserBearerAuth } from "../middleware/auth.middleware";
 import { bloggerIdValidation } from "../middleware/blogger-id-validation";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationBloggerYoutubeUrl, validationBloggerName, validationPostTitle, validationPostShortDescription, validationPostContent } from "../middleware/input-validation.middleware";
@@ -25,6 +26,7 @@ bloggersRouter.get("/", async (req: Request, res: Response) => {
 })
 
 bloggersRouter.post("/", 
+    checkUserBearerAuth,
     validationBloggerName,
     validationBloggerYoutubeUrl,
     checkValidationErrors,
@@ -46,6 +48,7 @@ bloggersRouter.get("/:id", async (req: Request, res: Response) => {
 })
 
 bloggersRouter.put("/:id", 
+    checkUserBearerAuth,
     validationBloggerName,
     validationBloggerYoutubeUrl,
     checkValidationErrors,
@@ -67,15 +70,18 @@ bloggersRouter.put("/:id",
     }
 )
 
-bloggersRouter.delete("/:id", async (req: Request, res: Response) => {
-    const isDeleted = await bloggersService.deleteBloggerById(req.params.id);
-    
-    if (!isDeleted) {
-        res.send(404)
-    } else {
-        res.send(204)
+bloggersRouter.delete("/:id", 
+    checkUserBearerAuth,
+    async (req: Request, res: Response) => {
+        const isDeleted = await bloggersService.deleteBloggerById(req.params.id);
+        
+        if (!isDeleted) {
+            res.send(404)
+        } else {
+            res.send(204)
+        }
     }
-})
+)
 
 bloggersRouter.get("/:id/posts", 
     bloggerIdValidation,
@@ -97,6 +103,7 @@ bloggersRouter.get("/:id/posts",
 )
 
 bloggersRouter.post("/:id/posts", 
+    checkUserBearerAuth,
     bloggerIdValidation,
     validationPostTitle,
     validationPostShortDescription,

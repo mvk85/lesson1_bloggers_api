@@ -34,5 +34,11 @@ export const usersRepository = {
        const result = await usersCollection.deleteOne({ id })
        
        return result.deletedCount === 1;
+   },
+
+   async getUserByLogin(login: string): Promise<User | null> {
+       const user = await usersCollection.findOne({ login })
+       
+       return user;
    }
 }
