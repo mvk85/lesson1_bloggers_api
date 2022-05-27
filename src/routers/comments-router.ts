@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
 import { commentsService } from "../domain/comments.service";
-import { checkCommentCredentialsAndExist, checkUserBearerAuth } from "../middleware/auth.middleware";
+import { checkCommentCredentials, checkUserBearerAuth } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
+import { checkCommentExist } from "../middleware/check-exist.middleware";
 import { validationCommentContent } from "../middleware/input-validation.middleware";
 
 export const commentsRouter = Router()
@@ -20,7 +21,8 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
 
 commentsRouter.delete('/:id', 
     checkUserBearerAuth,
-    checkCommentCredentialsAndExist,
+    checkCommentCredentials,
+    checkCommentExist,
     async (req: Request, res: Response) => {
         const id = req.params.id;
 
@@ -36,7 +38,8 @@ commentsRouter.delete('/:id',
 
 commentsRouter.put('/:id',
     checkUserBearerAuth,
-    checkCommentCredentialsAndExist,
+    checkCommentCredentials,
+    checkCommentExist,
     validationCommentContent,
     checkValidationErrors,
     async (req: Request, res: Response) => {

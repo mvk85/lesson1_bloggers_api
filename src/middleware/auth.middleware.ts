@@ -50,7 +50,7 @@ export const checkUserBearerAuth = async (req: Request, res: Response, next: Nex
     }
 }
 
-export const checkCommentCredentialsAndExist = 
+export const checkCommentCredentials = 
     async (req: Request, res: Response, next: NextFunction) => {
         const commentId = req.params.id;
         const userId = req.user!.userId;
@@ -60,15 +60,7 @@ export const checkCommentCredentialsAndExist =
             res.sendStatus(401)
 
             return;
-        }
-
-        if (!currentComment) {
-            res.sendStatus(404)
-
-            return;
-        }
-
-        
+        }     
 
         next();
 }
