@@ -102,7 +102,7 @@ postsRouter.delete("/:id",
     }
 )
 
-postsRouter.post('/:postId/comments', 
+postsRouter.post('/:id/comments', 
     checkUserBearerAuth,
     checkPostExist,
     validationCommentContent,
@@ -114,7 +114,7 @@ postsRouter.post('/:postId/comments',
             content,
             userId: req.user!.userId,
             userLogin: req.user!.userLogin,
-            postId: req.params.postId,
+            postId: req.params.id,
         })
 
         if (!newComment) {
@@ -127,12 +127,12 @@ postsRouter.post('/:postId/comments',
     }
 )
 
-postsRouter.get('/:postId/comments', 
+postsRouter.get('/:id/comments', 
     checkPostExist,
     async (req: Request, res: Response) => {
         const { PageNumber, PageSize } = req.query;
         const response = await postsService.getCommentsByPostId(
-            req.params.postId,
+            req.params.id,
             { 
                 PageNumber: PageNumber as string, 
                 PageSize: PageSize as string 
