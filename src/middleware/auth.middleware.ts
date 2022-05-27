@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { commentsService } from "../domain/comments.service";
 import { usersRepository } from "../repository/users-repository";
 import { jwtUtility } from "../utils";
 
@@ -47,4 +48,25 @@ export const checkUserBearerAuth = async (req: Request, res: Response, next: Nex
 
         return;
     }
+}
+
+export const checkCommentCredentialsAndExist = 
+    async (req: Request, res: Response, next: NextFunction) => {
+        const commentId = req.params.id;
+        const userId = req.user!.userId;
+        const currentComment = await commentsService.getById(commentId)
+
+        if (!currentComment) {
+            res.sendStatus(404)
+
+            return;
+        }
+
+        if (userId !== currentComment?.userId) {
+            res.sendStatus(401)
+
+            return;
+        }
+
+        next();
 }

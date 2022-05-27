@@ -30,5 +30,26 @@ export const commentsRepository = {
         )
 
         return createdComment;
+    },
+
+    async getCommentByid(id: string) {
+        const comment = await commentsCollection.findOne({ id }, commentsProjection)
+
+        return comment;
+    },
+
+    async deleteCommentById(id: string) {
+        const result = await commentsCollection.deleteOne({ id })
+
+        return result.deletedCount === 1;
+    },
+
+    async updateCommentById(id: string, { content }: { content: string }) {
+        const result = await commentsCollection.updateOne(
+            { id },
+            { $set: { content }}
+        )
+
+        return result.matchedCount === 1;
     }
 }
