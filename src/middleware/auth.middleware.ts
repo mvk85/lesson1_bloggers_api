@@ -55,6 +55,12 @@ export const checkCommentCredentialsAndExist =
         const commentId = req.params.id;
         const userId = req.user!.userId;
         const currentComment = await commentsService.getById(commentId)
+        
+        if (userId !== currentComment?.userId) {
+            res.sendStatus(401)
+
+            return;
+        }
 
         if (!currentComment) {
             res.sendStatus(404)
@@ -62,11 +68,7 @@ export const checkCommentCredentialsAndExist =
             return;
         }
 
-        if (userId !== currentComment?.userId) {
-            res.sendStatus(401)
-
-            return;
-        }
+        
 
         next();
 }

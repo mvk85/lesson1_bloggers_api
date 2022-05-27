@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { postsService } from "../domain/posts.service";
 import { checkAdminBasicAuth, checkUserBearerAuth } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
+import { checkPostExist } from "../middleware/check-exist.middleware";
 import { validationCommentContent, validationPostBloggerId, validationPostContent, validationPostShortDescription, validationPostTitle } from "../middleware/input-validation.middleware";
 
 export const postsRouter = Router();
@@ -59,6 +60,7 @@ postsRouter.get("/:id", async (req: Request, res: Response) => {
 
 postsRouter.put("/:id",
     checkAdminBasicAuth,
+    checkPostExist,
     validationPostTitle,
     validationPostShortDescription,
     validationPostContent,
@@ -66,13 +68,6 @@ postsRouter.put("/:id",
     checkValidationErrors,
     async (req: Request, res: Response) => {
         const postId = req.params.id;
-        const postForUpdate = await postsService.getPostById(postId);
-
-        if (!postForUpdate) {
-            res.sendStatus(404)
-
-            return;
-        }
 
         const bodyFields = {
             title: req.body.title,
@@ -93,6 +88,7 @@ postsRouter.put("/:id",
 
 postsRouter.delete("/:id", 
     checkAdminBasicAuth,
+    checkPostExist,
     async (req: Request, res: Response) => {
         const postId = req.params.id;
 
@@ -108,6 +104,7 @@ postsRouter.delete("/:id",
 
 postsRouter.post('/:postId/comments', 
     checkUserBearerAuth,
+    checkPostExist,
     validationCommentContent,
     checkValidationErrors,
     async (req: Request, res: Response) => {
@@ -130,15 +127,18 @@ postsRouter.post('/:postId/comments',
     }
 )
 
-postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
-    const { PageNumber, PageSize } = req.query;
-    const response = await postsService.getCommentsByPostId(
-        req.params.postId,
-        { 
-            PageNumber: PageNumber as string, 
-            PageSize: PageSize as string 
-        }
-    );
+postsRouter.get('/:postId/comments', 
+    checkPostExist,
+    async (req: Request, res: Response) => {
+        const { PageNumber, PageSize } = req.query;
+        const response = await postsService.getCommentsByPostId(
+            req.params.postId,
+            { 
+                PageNumber: PageNumber as string, 
+                PageSize: PageSize as string 
+            }
+        );
 
-    res.status(200).send(response)
-})
+        res.status(200).send(response)
+    }
+)
