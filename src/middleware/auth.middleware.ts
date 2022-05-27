@@ -57,7 +57,7 @@ export const checkCommentCredentials =
         const currentComment = await commentsService.getById(commentId)
         
         if (userId !== currentComment?.userId) {
-            res.sendStatus(401)
+            res.sendStatus(403)
 
             return;
         }     
