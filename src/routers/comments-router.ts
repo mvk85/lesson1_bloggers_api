@@ -20,9 +20,9 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
 })
 
 commentsRouter.delete('/:id', 
+    checkCommentExist,
     checkUserBearerAuth,
     checkCommentCredentials,
-    checkCommentExist,
     async (req: Request, res: Response) => {
         const id = req.params.id;
 
@@ -37,9 +37,9 @@ commentsRouter.delete('/:id',
 )
 
 commentsRouter.put('/:id',
+    checkCommentExist,
     checkUserBearerAuth,
     checkCommentCredentials,
-    checkCommentExist,
     validationCommentContent,
     checkValidationErrors,
     async (req: Request, res: Response) => {
