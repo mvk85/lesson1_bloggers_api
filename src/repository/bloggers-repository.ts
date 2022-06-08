@@ -48,5 +48,9 @@ export const bloggersRepository = {
         )
 
         return result.matchedCount === 1;
+    },
+
+    async deleteAllBloggers() {
+        await bloggersCollection.deleteMany({})
     }
 }

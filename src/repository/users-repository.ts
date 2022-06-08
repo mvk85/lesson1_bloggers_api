@@ -46,5 +46,9 @@ export const usersRepository = {
        const user = await usersCollection.findOne({ id })
        
        return user;
-   }
+   },
+
+    async deleteAllUsers() {
+        await usersCollection.deleteMany({})
+    }
 }

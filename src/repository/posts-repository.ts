@@ -40,4 +40,8 @@ export const postsRepository = {
 
         return result.matchedCount === 1;
     },
+
+    async deleteAllPosts() {
+        await postsCollection.deleteMany({})
+    }
 }

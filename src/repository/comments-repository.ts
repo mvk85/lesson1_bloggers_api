@@ -51,5 +51,9 @@ export const commentsRepository = {
         )
 
         return result.matchedCount === 1;
+    },
+
+    async deleteAllComments() {
+        await commentsCollection.deleteMany({})
     }
 }
