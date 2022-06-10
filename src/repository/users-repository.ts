@@ -1,9 +1,7 @@
-import { count } from "console";
-import { removeObjectIdOption } from "../const"
-import { User, UserItem } from "../types";
+import { CreatedUserType, User } from "../types";
 import { usersCollection } from "./db"
 
-const projectionUserItem = { projection: {_id: false, id: true, login: true } };
+const projectionUserItem = { projection: {_id: false, id: true, login: true, email: true } };
 
 export const usersRepository = {
    async getUsers(skip: number, limit: number): Promise<User[]> {
@@ -22,7 +20,7 @@ export const usersRepository = {
        return count;
    },
 
-   async createUser(newUser: User): Promise<UserItem | null> {
+   async createUser(newUser: User): Promise<CreatedUserType | null> {
        await usersCollection.insertOne(newUser);
 
        const user = await usersCollection.findOne({ id: newUser.id}, projectionUserItem)
@@ -36,19 +34,57 @@ export const usersRepository = {
        return result.deletedCount === 1;
    },
 
-   async getUserByLogin(login: string): Promise<User | null> {
+   async findUserByLogin(login: string): Promise<User | null> {
        const user = await usersCollection.findOne({ login })
        
        return user;
    },
 
-   async getUserByUserId(id: string): Promise<User | null> {
+   async findUserByEmail(email: string): Promise<User | null> {
+       const user = await usersCollection.findOne({ email })
+       
+       return user;
+   },
+
+   async findUserByUserId(id: string): Promise<User | null> {
        const user = await usersCollection.findOne({ id })
+       
+       return user;
+   },
+
+   async findUserByConfirmationCode(code: string): Promise<User | null> {
+       const user = await usersCollection.findOne({ confirmCode: code })
        
        return user;
    },
 
     async deleteAllUsers() {
         await usersCollection.deleteMany({})
+    },
+
+    async registrationConfirmed(id: string): Promise<boolean> {
+        const resultUpdating = await usersCollection.updateOne(
+            { id },
+            { $set: { isConfirmed: true, confirmCode: null } }
+        )
+
+        return resultUpdating.matchedCount === 1;
+    },
+
+    async updateConfirmationCode(id: string, code: string) {
+        const resultUpdating = await usersCollection.updateOne(
+            { id },
+            { $set: { confirmCode: code }}
+        )
+
+        return resultUpdating.matchedCount === 1;
+    },
+
+    async userConfirmed(userId: string) {
+        const user = await usersCollection.findOne({ id: userId })
+
+        if (!user) return false;
+
+        return user.isConfirmed;
     }
 }

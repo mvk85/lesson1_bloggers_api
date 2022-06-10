@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { usersService } from "../domain/users.service";
 import { checkAdminBasicAuth } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
+import { validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
 
 export const usersRouter = Router();
 
@@ -23,11 +23,12 @@ usersRouter.post("/",
     checkAdminBasicAuth,
     validationUserLogin,
     validationUserPassword,
+    validationUserEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        const {login, password} = req.body;
+        const {login, password, email} = req.body;
 
-        const user = await usersService.addUser({ login, password })
+        const user = await usersService.addUser({ login, password, email })
 
         if (!user) {
             res.sendStatus(400)

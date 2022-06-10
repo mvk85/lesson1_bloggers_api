@@ -1,4 +1,5 @@
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "./const";
 import { settings } from "./setting";
 import { PaginationParams, User } from "./types";
@@ -62,3 +63,5 @@ export const jwtUtility = {
         }
     }
 }
+
+export const generateConfirmCode = () => uuidv4()

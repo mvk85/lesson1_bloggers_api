@@ -35,7 +35,7 @@ export const checkUserBearerAuth = async (req: Request, res: Response, next: Nex
         return;
     }
 
-    const user = await usersRepository.getUserByUserId(userId);
+    const user = await usersRepository.findUserByUserId(userId);
 
     if (user) {
         req.user = { 

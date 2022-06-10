@@ -28,13 +28,22 @@ export type Post = WithId<{
 }>
 
 export type User = WithId<{
-    passwordHash: string
+    passwordHash: string;
+    isConfirmed: boolean;
+    confirmCode?: string | null;
 } & UserItem>
 
 export type UserItem = WithId<{
     id:	CustomIdType;
     login: string;
+    email: string;
 }>
+
+export type CreatedUserType = {
+    id:	CustomIdType;
+    login: string;
+    email: string;
+}
 
 export type Comment = WithId<{
     id: string;
@@ -61,9 +70,10 @@ export type CreatPostData = {
     blogger?: Blogger;
 }
 
-export type UserCreateFields = {
+export type CreateUserFields = {
     login: string;
     password: string;
+    email: string;
 }
 
 export enum MethodsHttp {
@@ -115,4 +125,15 @@ export type ResponsePostsByBloggerId = PaginationData & {
 
 export type ResponseUsers = PaginationData & {
     items: User[];
+}
+
+export enum EmailStatus {
+    registration = 'registration'
+}
+
+export type EmailEntity = {
+    email: string;
+    status: EmailStatus;
+    body: string;
+    createdAt: string;
 }

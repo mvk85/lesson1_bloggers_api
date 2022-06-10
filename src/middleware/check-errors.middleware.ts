@@ -3,8 +3,7 @@ import { validationResult } from "express-validator";
 import { ErrorMessage } from "../types";
 
 const generateErrorResponse = (errors: ErrorMessage[]) => ({
-    errorsMessages: errors,
-    resultCode: 1
+    errorsMessages: errors
 })
 
 const generateError = (field: string, message: string) => ({

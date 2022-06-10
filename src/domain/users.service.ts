@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { usersRepository } from "../repository/users-repository";
-import { PaginationParams, ResponseUsers, User, UserCreateFields } from "../types";
-import { generateCustomId, generatePaginationData } from "../utils";
+import { PaginationParams, ResponseUsers, User, CreateUserFields } from "../types";
+import { generateConfirmCode, generateCustomId, generatePaginationData } from "../utils";
 import { authService } from "./auth.service";
 
 export const usersService = {
@@ -20,13 +20,32 @@ export const usersService = {
         }
     },
 
-    async addUser(fields: UserCreateFields) {
+    async addUser(fields: CreateUserFields) {
         const passwordHash = await authService.generateHash(fields.password)
         const newUser: User = {
             _id: new ObjectId(),
             id: generateCustomId(),
             login: fields.login,
-            passwordHash
+            passwordHash,
+            email: fields.email,
+            isConfirmed: true,
+        }
+
+        const createdUser = await usersRepository.createUser(newUser);
+
+        return createdUser;
+    },
+
+    async makeRegisteredUser(fields: CreateUserFields) {
+        const passwordHash = await authService.generateHash(fields.password)
+        const newUser: User = {
+            _id: new ObjectId(),
+            id: generateCustomId(),
+            login: fields.login,
+            passwordHash,
+            email: fields.email,
+            isConfirmed: false,
+            confirmCode: generateConfirmCode()
         }
 
         const createdUser = await usersRepository.createUser(newUser);
@@ -38,5 +57,14 @@ export const usersService = {
         const isDeleted = await usersRepository.deleteUserByid(id);
 
         return isDeleted;
+    },
+
+    async updateConfirmationCode(user: User) {
+        const newCode = generateConfirmCode();
+        const isUpdated = await usersRepository.updateConfirmationCode(
+            user.id, newCode
+        );
+
+        return isUpdated;
     }
 }

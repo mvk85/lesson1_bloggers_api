@@ -3,6 +3,8 @@ import { bloggersRepository } from "../repository/bloggers-repository";
 
 const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
+const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+
 export const validationBloggerName = body('name')
     .trim()
     .isLength({ min: 1, max: 15 })
@@ -58,6 +60,10 @@ export const validationUserPassword = body('password')
     .isLength({ min: 6, max: 20})
     .withMessage('password length should be between 6 and 20')
 
+export const validationUserEmail = body('email')
+    .trim()
+    .matches(regexEmail)
+    .withMessage('email field should be valid EMAIL')
 
 // comments
 
@@ -65,3 +71,10 @@ export const validationCommentContent = body('content')
     .trim()
     .isLength({ min: 20, max: 300 })
     .withMessage('content lenght should be between 20 and 300');
+
+// auth
+
+export const validationConfirmationCode = body('code')
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage('code should not be empty')
