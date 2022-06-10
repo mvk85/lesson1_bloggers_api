@@ -78,13 +78,5 @@ export const usersRepository = {
         )
 
         return resultUpdating.matchedCount === 1;
-    },
-
-    async userConfirmed(userId: string) {
-        const user = await usersCollection.findOne({ id: userId })
-
-        if (!user) return false;
-
-        return user.isConfirmed;
     }
 }

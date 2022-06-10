@@ -40,10 +40,6 @@ export const authService = {
 
         if (!user) return false;
 
-        const isConfirmed = await usersRepository.userConfirmed(user.id)
-
-        if (isConfirmed) return true;
-
         const savedIsConfirmed = await usersRepository.registrationConfirmed(user.id)
 
         return savedIsConfirmed;

@@ -62,16 +62,14 @@ authRouter.post('/registration-confirmation',
 
         if (isConfirmed) {
             res.sendStatus(204)
-        } else {
-            res.sendStatus(400)
         }
     }
 )
 
 authRouter.post('/registration-email-resending',
     validationUserEmail,
-    validationConfirmedCodeByEmail,
     validationExistEmail,
+    validationConfirmedCodeByEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
         // todo need to add 429 response
@@ -81,8 +79,6 @@ authRouter.post('/registration-email-resending',
 
         if (isSendedNewCode) {
             res.sendStatus(204)
-        } else {
-            res.sendStatus(400)
         }
     }
 )
