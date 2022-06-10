@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { authService } from "../domain/auth.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationConfirmationCode, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
+import { validationConfirmationCode, validationConfirmedCode, validationConfirmedCodeByEmail, validationExistConfirmationCode, validationExistEmail, validationExistUserEmail, validationExistUserLogin, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
 import { jwtUtility } from "../utils";
 
 export const authRouter = Router();
@@ -30,6 +30,8 @@ authRouter.post('/registration',
     validationUserLogin,
     validationUserPassword,
     validationUserEmail,
+    validationExistUserLogin,
+    validationExistUserEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
         // todo check 429 More than 5 registration attempts from one IP-address during 10 seconds
@@ -49,6 +51,8 @@ authRouter.post('/registration',
 
 authRouter.post('/registration-confirmation',
     validationConfirmationCode,
+    validationConfirmedCode,
+    validationExistConfirmationCode,
     checkValidationErrors,
     async (req: Request, res: Response) => {
         // todo need to add 429 response
@@ -66,6 +70,8 @@ authRouter.post('/registration-confirmation',
 
 authRouter.post('/registration-email-resending',
     validationUserEmail,
+    validationConfirmedCodeByEmail,
+    validationExistEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
         // todo need to add 429 response

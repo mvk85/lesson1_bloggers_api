@@ -65,7 +65,7 @@ export const usersRepository = {
     async registrationConfirmed(id: string): Promise<boolean> {
         const resultUpdating = await usersCollection.updateOne(
             { id },
-            { $set: { isConfirmed: true, confirmCode: null } }
+            { $set: { isConfirmed: true } }
         )
 
         return resultUpdating.matchedCount === 1;

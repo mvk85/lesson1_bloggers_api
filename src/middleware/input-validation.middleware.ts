@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 import { bloggersRepository } from "../repository/bloggers-repository";
+import { usersRepository } from "../repository/users-repository";
 
 const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
@@ -55,6 +56,14 @@ export const validationUserLogin = body('login')
     .isLength({ min: 3, max: 10})
     .withMessage('login length should be between 3 and 10')
 
+export const validationExistUserLogin = body('login')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByLogin(String(value))
+
+        return user ? Promise.reject() : Promise.resolve();
+    })
+    .withMessage('login should not exist')
+
 export const validationUserPassword = body('password')
     .trim()
     .isLength({ min: 6, max: 20})
@@ -64,6 +73,14 @@ export const validationUserEmail = body('email')
     .trim()
     .matches(regexEmail)
     .withMessage('email field should be valid EMAIL')
+
+export const validationExistUserEmail = body('email')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByEmail(String(value))
+
+        return user ? Promise.reject() : Promise.resolve();
+    })
+    .withMessage('email should not exist')
 
 // comments
 
@@ -78,3 +95,36 @@ export const validationConfirmationCode = body('code')
     .trim()
     .isLength({ min: 1 })
     .withMessage('code should not be empty')
+
+export const validationConfirmedCode = body('code')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByConfirmationCode(String(value))
+
+        return user?.isConfirmed ? Promise.reject() : Promise.resolve();
+    })
+    .withMessage('code should not be confirmed')
+
+export const validationExistConfirmationCode = body('code')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByConfirmationCode(String(value))
+
+        return user ? Promise.resolve() : Promise.reject();
+    })
+    .withMessage('code should exist')
+
+export const validationConfirmedCodeByEmail = body('email')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByEmail(String(value))
+
+        return user?.isConfirmed ? Promise.reject() : Promise.resolve();
+    })
+    .withMessage('email should not be confirmed')
+
+export const validationExistEmail = body('email')
+    .custom(async (value) => {
+        const user = await usersRepository.findUserByEmail(String(value))
+
+        return user ? Promise.resolve() : Promise.reject();
+    })
+    .withMessage('email should exist')
+
