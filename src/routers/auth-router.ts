@@ -8,7 +8,7 @@ import { jwtUtility } from "../utils";
 export const authRouter = Router();
 
 authRouter.post('/login',
-    checkBruteForceByIp,
+    // checkBruteForceByIp,
     validationUserLogin,
     validationUserPassword,
     checkValidationErrors,
@@ -23,12 +23,12 @@ authRouter.post('/login',
             return;
         }
 
-        res.sendStatus(401)
+        res.sendStatus(400)
     }
 )
 
 authRouter.post('/registration',
-    checkBruteForceByIp,
+    // checkBruteForceByIp,
     validationUserLogin,
     validationUserPassword,
     validationUserEmail,
@@ -45,13 +45,13 @@ authRouter.post('/registration',
         if (isRegistrated) {
             res.sendStatus(204)
         } else {
-            res.sendStatus(404)
+            res.sendStatus(400)
         }
     }
 )
 
 authRouter.post('/registration-confirmation',
-    checkBruteForceByIp,
+    // checkBruteForceByIp,
     validationConfirmationCode,
     validationConfirmedCode,
     validationExistConfirmationCode,
@@ -64,13 +64,13 @@ authRouter.post('/registration-confirmation',
         if (isConfirmed) {
             res.sendStatus(204)
         } else {
-            res.sendStatus(404)
+            res.sendStatus(400)
         }
     }
 )
 
 authRouter.post('/registration-email-resending',
-    checkBruteForceByIp,
+    // checkBruteForceByIp,
     validationUserEmail,
     validationExistEmail,
     validationConfirmedCodeByEmail,
@@ -83,7 +83,7 @@ authRouter.post('/registration-email-resending',
         if (isSendedNewCode) {
             res.sendStatus(204)
         } else {
-            res.sendStatus(404)
+            res.sendStatus(400)
         }
     }
 )

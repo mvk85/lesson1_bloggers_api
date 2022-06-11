@@ -7,9 +7,9 @@ export const checkBruteForceByIp = async (req: Request, res: Response, next: Nex
     const ip = req.ip;
     const endpoint = req.baseUrl + req.path;
 
-    const isValid = await requestsService.checkRequestsCount(ip, endpoint);
+    const isCorrectRequest = await requestsService.checkRequestsCount(ip, endpoint);
 
-    if (!isValid) {
+    if (!isCorrectRequest) {
         res.sendStatus(429)
 
         return;
