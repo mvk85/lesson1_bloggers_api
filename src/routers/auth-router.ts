@@ -70,12 +70,12 @@ authRouter.post('/registration-confirmation',
 )
 
 authRouter.post('/registration-email-resending',
+    checkBruteForceByIp,
     validationUserEmail,
     validationExistEmail,
     validationConfirmedCodeByEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        // todo need to add 429 response
         const email = req.body.email
 
         const isSendedNewCode = await authService.registrationEmailResending(email)
