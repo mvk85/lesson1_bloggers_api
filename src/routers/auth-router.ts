@@ -44,9 +44,9 @@ authRouter.post('/registration',
 
         if (isRegistrated) {
             res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
         }
-
-        res.send(200)
     }
 )
 
@@ -63,6 +63,8 @@ authRouter.post('/registration-confirmation',
 
         if (isConfirmed) {
             res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
         }
     }
 )
@@ -80,6 +82,8 @@ authRouter.post('/registration-email-resending',
 
         if (isSendedNewCode) {
             res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
         }
     }
 )
