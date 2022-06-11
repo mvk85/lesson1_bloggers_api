@@ -2,16 +2,17 @@ import { Request, Response, Router } from "express";
 import { authService } from "../domain/auth.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationConfirmationCode, validationConfirmedCode, validationConfirmedCodeByEmail, validationExistConfirmationCode, validationExistEmail, validationExistUserEmail, validationExistUserLogin, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
+import { checkBruteForceByIp } from "../middleware/ip-middleware";
 import { jwtUtility } from "../utils";
 
 export const authRouter = Router();
 
-authRouter.post('/login', 
+authRouter.post('/login',
+    checkBruteForceByIp,
     validationUserLogin,
     validationUserPassword,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        // todo need to add 429 response
         const user = await authService.getUserByCredentials(req.body.login, req.body.password)
 
         if (user) {
@@ -27,6 +28,7 @@ authRouter.post('/login',
 )
 
 authRouter.post('/registration',
+    checkBruteForceByIp,
     validationUserLogin,
     validationUserPassword,
     validationUserEmail,
@@ -34,8 +36,6 @@ authRouter.post('/registration',
     validationExistUserEmail,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        // todo check 429 More than 5 registration attempts from one IP-address during 10 seconds
-
         const isRegistrated = await authService.registration({
             login: req.body.login,
             email: req.body.email,
@@ -45,17 +45,18 @@ authRouter.post('/registration',
         if (isRegistrated) {
             res.sendStatus(204)
         }
-        
+
+        res.send(200)
     }
 )
 
 authRouter.post('/registration-confirmation',
+    checkBruteForceByIp,
     validationConfirmationCode,
     validationConfirmedCode,
     validationExistConfirmationCode,
     checkValidationErrors,
     async (req: Request, res: Response) => {
-        // todo need to add 429 response
         const confirmationCode = req.body.code;
 
         const isConfirmed = await authService.registrationConfirmation(confirmationCode)

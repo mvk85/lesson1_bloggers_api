@@ -3,7 +3,7 @@ import { bloggersRepository } from "../repository/bloggers-repository";
 import { commentsRepository } from "../repository/comments-repository";
 import { postsRepository } from "../repository/posts-repository";
 import { Comment, PaginationParams, Post, PostCreateFields, ResponseCommentsByPostId, ResponsePosts } from "../types";
-import { generateCustomId, generatePaginationData } from "../utils";
+import { generateCustomId, generatePaginationData, newIsoDate } from "../utils";
 
 export const postsService = {
     async getPosts(paginationParams: PaginationParams): Promise<ResponsePosts> {
@@ -73,7 +73,7 @@ export const postsService = {
             content,
             userId,
             userLogin,
-            addedAt: new Date().toISOString(),
+            addedAt: newIsoDate(),
             postId
         }
 

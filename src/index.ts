@@ -15,6 +15,9 @@ const port = process.env.PORT || 3000
 app.use(cors())
 app.use(bodyParser.json())
 
+// to block by ip
+app.set('trust proxy', true);
+
 app.use('/bloggers', bloggersRouter);
 
 app.use('/posts', postsRouter);

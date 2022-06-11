@@ -137,3 +137,9 @@ export type EmailEntity = {
     body: string;
     createdAt: string;
 }
+
+export type BruteForceItem = {
+    ip: string;
+    date: number;
+    endpoint: string;
+}

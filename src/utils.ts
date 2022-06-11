@@ -64,4 +64,8 @@ export const jwtUtility = {
     }
 }
 
-export const generateConfirmCode = () => uuidv4()
+export const generateConfirmCode = () => uuidv4();
+
+export const newIsoDate = () => new Date().toISOString();
+
+export const newDateInMilliseconds = () => new Date().getTime();
