@@ -4,7 +4,10 @@ import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
 
 export const checkBruteForceByIp = async (req: Request, res: Response, next: NextFunction) => {
-    const isValid = await requestsService.checkRequestsCount(req.ip);
+    const ip = req.ip;
+    const endpoint = req.baseUrl + req.path;
+
+    const isValid = await requestsService.checkRequestsCount(ip, endpoint);
 
     if (!isValid) {
         res.sendStatus(429)
@@ -13,9 +16,9 @@ export const checkBruteForceByIp = async (req: Request, res: Response, next: Nex
     }
 
     const newRequestItem: BruteForceItem = {
-        ip: req.ip,
-        date: newDateInMilliseconds(),
-        endpoint: req.baseUrl + req.path
+        ip,
+        endpoint,
+        date: newDateInMilliseconds()
     }
 
     await requestsService.saveRequest(newRequestItem)

@@ -6,11 +6,12 @@ import { requestsCollection } from "./db";
 const REQUEST_CHECKING_DURING = -10;
 
 export const requestsRepository = {
-    async getRequestsCountByIp(ip: string) {
+    async getRequestsCountByIp(ip: string, endpoint: string) {
         const endDate = newDateInMilliseconds()
         const startDate = addSeconds(endDate, REQUEST_CHECKING_DURING).getTime();
         const count = await requestsCollection.countDocuments({ 
             ip,
+            endpoint,
             date: {"$gte": startDate, "$lte": endDate }
         });
 
