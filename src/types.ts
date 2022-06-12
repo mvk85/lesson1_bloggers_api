@@ -142,5 +142,5 @@ export type BruteForceItem = {
     ip: string;
     date: number;
     endpoint: string;
-    login?: string;
+    // login?: string;
 }

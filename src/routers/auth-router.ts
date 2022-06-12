@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { authService } from "../domain/auth.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationConfirmationCode, validationConfirmedCode, validationConfirmedCodeByEmail, validationExistConfirmationCode, validationExistEmail, validationExistUserEmail, validationExistUserLogin, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
-import { checkBruteForceByIp, checkBruteForceByLogin } from "../middleware/request-middleware";
+import { checkBruteForceByIp } from "../middleware/request-middleware";
 import { jwtUtility } from "../utils";
 
 export const authRouter = Router();
@@ -12,7 +12,7 @@ authRouter.post('/login',
     validationUserLogin,
     validationUserPassword,
     checkValidationErrors,
-    checkBruteForceByLogin,
+    // checkBruteForceByLogin,
     async (req: Request, res: Response) => {
         const user = await authService.getUserByCredentials(req.body.login, req.body.password)
 

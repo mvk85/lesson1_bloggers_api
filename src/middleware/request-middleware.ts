@@ -3,24 +3,24 @@ import { requestsService } from "../domain/requests.service";
 import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
 
-const  LOGIN_ROUTER = '/auth/login';
+// const  LOGIN_ROUTER = '/auth/login';
 
-export const checkBruteForceByLogin = async (req: Request, res: Response, next: NextFunction) => {
-    const endpoint = req.baseUrl + req.path;
+// export const checkBruteForceByLogin = async (req: Request, res: Response, next: NextFunction) => {
+//     const endpoint = req.baseUrl + req.path;
 
-    if (endpoint === LOGIN_ROUTER) {
-        const login = req.body.login
-        const isCorrectLoginRequest = await requestsService.checkRequestsCountByLogin(login, endpoint);
+//     if (endpoint === LOGIN_ROUTER) {
+//         const login = req.body.login
+//         const isCorrectLoginRequest = await requestsService.checkRequestsCountByLogin(login, endpoint);
 
-        if (!isCorrectLoginRequest) {
-            res.sendStatus(429)
+//         if (!isCorrectLoginRequest) {
+//             res.sendStatus(429)
     
-            return;
-        }
-    }
+//             return;
+//         }
+//     }
 
-    next()
-}
+//     next()
+// }
 
 export const checkBruteForceByIp = async (req: Request, res: Response, next: NextFunction) => {
     const ip = req.ip;
@@ -34,12 +34,12 @@ export const checkBruteForceByIp = async (req: Request, res: Response, next: Nex
         return;
     }
 
-    const login = req.body?.login
+    // const login = req.body?.login
     const newRequestItem: BruteForceItem = {
         ip,
         endpoint,
         date: newDateInMilliseconds(),
-        login
+        // login
     }
 
     await requestsService.saveRequest(newRequestItem)
