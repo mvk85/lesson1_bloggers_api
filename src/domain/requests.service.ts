@@ -6,8 +6,14 @@ export const requestsService = {
         await requestsRepository.writeRequest(item);
     },
 
-    async checkRequestsCount(ip: string, endpoint: string) {
-        const requestCount = await requestsRepository.getRequestsCountByIp(ip, endpoint);
+    async getRequestsCountWithDuration(ip: string, endpoint: string) {
+        const requestCount = await requestsRepository.getRequestsCountWithDuration(ip, endpoint);
+
+        return requestCount <= 5;
+    },
+
+    async checkRequestsCountByLogin(login: string, endpoint: string) {
+        const requestCount = await requestsRepository.getRequestsCountByLogin(login, endpoint);
 
         return requestCount <= 5;
     }

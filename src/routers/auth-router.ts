@@ -2,13 +2,14 @@ import { Request, Response, Router } from "express";
 import { authService } from "../domain/auth.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
 import { validationConfirmationCode, validationConfirmedCode, validationConfirmedCodeByEmail, validationExistConfirmationCode, validationExistEmail, validationExistUserEmail, validationExistUserLogin, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
-import { checkBruteForceByIp } from "../middleware/ip-middleware";
+import { checkBruteForceByIp, checkBruteForceByLogin } from "../middleware/request-middleware";
 import { jwtUtility } from "../utils";
 
 export const authRouter = Router();
 
 authRouter.post('/login',
-    // checkBruteForceByIp,
+    checkBruteForceByIp,
+    checkBruteForceByLogin,
     validationUserLogin,
     validationUserPassword,
     checkValidationErrors,

@@ -6,7 +6,7 @@ import { requestsCollection } from "./db";
 const REQUEST_CHECKING_DURING = -10;
 
 export const requestsRepository = {
-    async getRequestsCountByIp(ip: string, endpoint: string) {
+    async getRequestsCountWithDuration(ip: string, endpoint: string) {
         const endDate = newDateInMilliseconds()
         const startDate = addSeconds(endDate, REQUEST_CHECKING_DURING).getTime();
         const count = await requestsCollection.countDocuments({ 
@@ -15,7 +15,18 @@ export const requestsRepository = {
             date: {"$gte": startDate, "$lte": endDate }
         });
 
-        console.log('-------- getRequestsCountByIp: [ip, endpoint, count]', [ip, endpoint, count])
+        console.log('-------- getRequestsCountWithDuration: [ip, endpoint, count, startDate, endDate]', [ip, endpoint, count, startDate, endDate])
+
+        return count;
+    },
+
+    async getRequestsCountByLogin(login: string, endpoint: string) {
+        const count = await requestsCollection.countDocuments({ 
+            endpoint,
+            login
+        });
+
+        console.log('-------- getRequestsCountByLogin: [login, endpoint, count]', [login, endpoint, count])
 
         return count;
     },
