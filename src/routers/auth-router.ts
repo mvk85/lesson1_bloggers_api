@@ -9,10 +9,10 @@ export const authRouter = Router();
 
 authRouter.post('/login',
     checkBruteForceByIp,
-    checkBruteForceByLogin,
     validationUserLogin,
     validationUserPassword,
     checkValidationErrors,
+    checkBruteForceByLogin,
     async (req: Request, res: Response) => {
         const user = await authService.getUserByCredentials(req.body.login, req.body.password)
 
@@ -29,7 +29,7 @@ authRouter.post('/login',
 )
 
 authRouter.post('/registration',
-    // checkBruteForceByIp,
+    checkBruteForceByIp,
     validationUserLogin,
     validationUserPassword,
     validationUserEmail,
@@ -52,7 +52,7 @@ authRouter.post('/registration',
 )
 
 authRouter.post('/registration-confirmation',
-    // checkBruteForceByIp,
+    checkBruteForceByIp,
     validationConfirmationCode,
     validationConfirmedCode,
     validationExistConfirmationCode,
@@ -71,7 +71,7 @@ authRouter.post('/registration-confirmation',
 )
 
 authRouter.post('/registration-email-resending',
-    // checkBruteForceByIp,
+    checkBruteForceByIp,
     validationUserEmail,
     validationExistEmail,
     validationConfirmedCodeByEmail,
