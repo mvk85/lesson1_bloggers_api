@@ -9,7 +9,7 @@ export const requestsService = {
     async getRequestsCountWithDuration(ip: string, endpoint: string) {
         const requestCount = await requestsRepository.getRequestsCountWithDuration(ip, endpoint);
 
-        return requestCount <= 5;
+        return requestCount <= 5 - 1;
     },
 
     async checkRequestsCountByLogin(login: string, endpoint: string) {
