@@ -15,8 +15,6 @@ export const requestsRepository = {
             date: {"$gte": startDate, "$lte": endDate }
         });
 
-        console.log('-------- getRequestsCountWithDuration: [ip, endpoint, count, startDate, endDate]', [ip, endpoint, count, startDate, endDate])
-
         return count;
     },
 
@@ -25,8 +23,6 @@ export const requestsRepository = {
             endpoint,
             login
         });
-
-        console.log('-------- getRequestsCountByLogin: [login, endpoint, count]', [login, endpoint, count])
 
         return count;
     },
