@@ -1,7 +1,7 @@
 import { addSeconds } from "date-fns";
 import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
-import { requestsCollection } from "./db";
+import { RequestsModel } from "./db";
 
 const REQUEST_CHECKING_DURING = -10;
 
@@ -9,7 +9,7 @@ export const requestsRepository = {
     async getRequestsCountWithDuration(ip: string, endpoint: string) {
         const endDate = newDateInMilliseconds()
         const startDate = addSeconds(endDate, REQUEST_CHECKING_DURING).getTime();
-        const count = await requestsCollection.countDocuments({ 
+        const count = await RequestsModel.countDocuments({ 
             ip,
             endpoint,
             date: {"$gte": startDate, "$lte": endDate }
@@ -19,7 +19,7 @@ export const requestsRepository = {
     },
 
     async getRequestsCountByLogin(login: string, endpoint: string) {
-        const count = await requestsCollection.countDocuments({ 
+        const count = await RequestsModel.countDocuments({ 
             endpoint,
             login
         });
@@ -28,12 +28,12 @@ export const requestsRepository = {
     },
 
     async writeRequest(request: BruteForceItem) {
-        await requestsCollection.insertOne(request);
+        await RequestsModel.create(request);
 
         return true;
     },
 
     async deleteAll() {
-        await requestsCollection.deleteMany({})
+        await RequestsModel.deleteMany({})
     }
 }

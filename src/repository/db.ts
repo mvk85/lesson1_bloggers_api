@@ -1,29 +1,68 @@
-import {MongoClient} from 'mongodb'
-import { Blogger, BruteForceItem, Comment, EmailEntity, Post, User } from "../types";
+import mongoose from 'mongoose';
+import { Blogger, BruteForceItem, Comment, Post, User } from "../types";
 
 const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
-const nameDb = 'social';
+const dbName = process.env.mongoDBName || 'social';
 
-const client = new MongoClient(mongoUri);
-const db = client.db(nameDb);
+const bloggersModelName = 'bloggers';
+const usersModelName = 'users';
+const postsModelName = 'posts';
+const commentsModelName = 'comments';
+const requestsModelName = 'requests';
 
-export const bloggersCollection = db.collection<Blogger>('bloggers')
-export const postsCollection = db.collection<Post>('posts')
-export const usersCollection = db.collection<User>('users')
-export const commentsCollection = db.collection<Comment>('comments')
-export const emailCollection = db.collection<EmailEntity>('emails')
-export const requestsCollection = db.collection<BruteForceItem>('requests')
+const bloggersSchema = new mongoose.Schema<Blogger>({
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    youtubeUrl: { type: String, required: true },
+})
+
+const usersSchema = new mongoose.Schema<User>({
+    passwordHash: { type: String, required: true },
+    isConfirmed: { type: Boolean, required: true },
+    confirmCode: { type: String, default: null },
+    id:	{ type: String, required: true },
+    login: { type: String, required: true },
+    email: { type: String, required: true },
+})
+
+const postsSchema = new mongoose.Schema<Post>({
+    id: { type: String, required: true },
+    title: { type: String, required: true },
+    shortDescription: { type: String, required: true },
+    content: { type: String, required: true },
+    bloggerId: { type: String, required: true },
+    bloggerName: { type: String, required: true }
+})
+
+const commentsSchema = new mongoose.Schema<Comment>({
+    id: { type: String, required: true },
+    content: { type: String, required: true },
+    userId: { type: String, required: true },
+    userLogin: { type: String, required: true },
+    addedAt: { type: String, required: true },
+    postId: { type: String, required: true },
+})
+
+const requestsSchema = new mongoose.Schema<BruteForceItem>({
+    ip: { type: String, required: true },
+    date: { type: Number, required: true },
+    endpoint: { type: String, required: true },
+})
+
+export const BloggersModel = mongoose.model(bloggersModelName, bloggersSchema)
+export const UsersModel = mongoose.model(usersModelName, usersSchema)
+export const PostsModel = mongoose.model(postsModelName, postsSchema)
+export const CommentsModel = mongoose.model(commentsModelName, commentsSchema)
+export const RequestsModel = mongoose.model(requestsModelName, requestsSchema)
 
 export async function runDb() {
     try {
-        // Connect the client to the server
-        await client.connect();
-        // Establish and verify connection
-        await db.command({ ping: 1 });
+        await mongoose.connect(mongoUri, { dbName })
+
         console.log("Connected successfully to mongo server");
     } catch {
         console.log("Can't connect to db");
         // Ensures that the client will close when you finish/error
-        await client.close();
+        await mongoose.disconnect();
     }
 }

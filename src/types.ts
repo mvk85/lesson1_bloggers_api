@@ -1,9 +1,9 @@
 import { WithId } from "mongodb";
 
-type CustomIdType = string;
+export type IdType = string;
 
 export type Blogger = WithId<{
-    id: CustomIdType;
+    id: IdType;
     name: string;
     youtubeUrl: string;
 }>
@@ -19,7 +19,7 @@ export type ErrorResponse = {
 }
 
 export type Post = WithId<{
-    id: CustomIdType;
+    id: IdType;
     title: string;
     shortDescription: string;
     content: string;
@@ -34,13 +34,13 @@ export type User = WithId<{
 } & UserItem>
 
 export type UserItem = WithId<{
-    id:	CustomIdType;
+    id:	IdType;
     login: string;
     email: string;
 }>
 
 export type CreatedUserType = {
-    id:	CustomIdType;
+    id:	IdType;
     login: string;
     email: string;
 }
@@ -131,16 +131,8 @@ export enum EmailStatus {
     registration = 'registration'
 }
 
-export type EmailEntity = {
-    email: string;
-    status: EmailStatus;
-    body: string;
-    createdAt: string;
-}
-
 export type BruteForceItem = {
     ip: string;
     date: number;
     endpoint: string;
-    // login?: string;
 }

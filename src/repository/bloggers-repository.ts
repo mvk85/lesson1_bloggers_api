@@ -1,6 +1,6 @@
 import { removeObjectIdOption } from "../const";
 import { Blogger, FilterBloggers } from "../types";
-import { bloggersCollection } from "./db"
+import { BloggersModel } from "./db"
 
 export const bloggersRepository = {
     async getBloggers(
@@ -8,7 +8,11 @@ export const bloggersRepository = {
         skip: number,
         limit: number,
     ): Promise<Blogger[]> {
-        const bloggers = await bloggersCollection.find(filter, removeObjectIdOption).skip(skip).limit(limit).toArray();
+        const bloggers = await BloggersModel
+            .find(filter, removeObjectIdOption)
+            .skip(skip)
+            .limit(limit)
+            .lean();
 
         return bloggers;
     },
@@ -16,33 +20,33 @@ export const bloggersRepository = {
     async getCountBloggers(
         filter: FilterBloggers, 
     ): Promise<number> {
-        const count = await bloggersCollection.count(filter)
+        const count = await BloggersModel.count(filter)
 
         return count;
     },
 
     async getBloggerById(id: string): Promise<Blogger | null> {
-        const blogger = await bloggersCollection.findOne({ id }, removeObjectIdOption)
+        const blogger = await BloggersModel.findOne({ id }, removeObjectIdOption)
 
         return blogger;
     },
 
     async createBlogger(newBlogger: Blogger): Promise<Blogger | null> {
-        await bloggersCollection.insertOne(newBlogger)
+        await BloggersModel.create(newBlogger)
 
-        const blogger = await bloggersCollection.findOne({ id: newBlogger.id }, removeObjectIdOption)
+        const blogger = await BloggersModel.findOne({ id: newBlogger.id }, removeObjectIdOption)
 
         return blogger;
     },
 
     async deleteBloggerById(id: string) {
-        const result = await bloggersCollection.deleteOne({ id })
+        const result = await BloggersModel.deleteOne({ id })
 
         return result.deletedCount === 1;
     },
 
     async updateBloggerById(id: string, {name, youtubeUrl}: { name: string, youtubeUrl: string }) {
-        const result = await bloggersCollection.updateOne(
+        const result = await BloggersModel.updateOne(
             { id }, 
             { $set: { name, youtubeUrl }}
         )
@@ -51,6 +55,6 @@ export const bloggersRepository = {
     },
 
     async deleteAllBloggers() {
-        await bloggersCollection.deleteMany({})
+        await BloggersModel.deleteMany({})
     }
 }

@@ -1,30 +1,29 @@
-import { removeObjectIdOption } from "../const";
 import { Comment, FilterComments } from "../types";
-import { commentsCollection } from "./db";
+import { CommentsModel } from "./db";
 
-const commentsProjection = { projection: {_id: false, postId: false }};
+const commentsProjection = {_id: false, postId: false };
 
 export const commentsRepository = {
     async getCountComments(filter: FilterComments): Promise<number> {
-        const count = await commentsCollection.count(filter)
+        const count = await CommentsModel.count(filter)
 
         return count;
     },
 
     async getComments(filter: FilterComments, skip: number, limit: number) {
-        const comments = await commentsCollection
+        const comments = await CommentsModel
             .find(filter, commentsProjection)
             .skip(skip)
             .limit(limit)
-            .toArray();
+            .lean();
 
         return comments
     },
 
     async createComment(newComment: Comment) {
-        await commentsCollection.insertOne(newComment)
+        await CommentsModel.create(newComment)
 
-        const createdComment = await commentsCollection.findOne(
+        const createdComment = await CommentsModel.findOne(
             { id: newComment.id }, 
             commentsProjection
         )
@@ -33,19 +32,19 @@ export const commentsRepository = {
     },
 
     async getCommentByid(id: string) {
-        const comment = await commentsCollection.findOne({ id }, commentsProjection)
+        const comment = await CommentsModel.findOne({ id }, commentsProjection)
 
         return comment;
     },
 
     async deleteCommentById(id: string) {
-        const result = await commentsCollection.deleteOne({ id })
+        const result = await CommentsModel.deleteOne({ id })
 
         return result.deletedCount === 1;
     },
 
     async updateCommentById(id: string, { content }: { content: string }) {
-        const result = await commentsCollection.updateOne(
+        const result = await CommentsModel.updateOne(
             { id },
             { $set: { content }}
         )
@@ -54,6 +53,6 @@ export const commentsRepository = {
     },
 
     async deleteAllComments() {
-        await commentsCollection.deleteMany({})
+        await CommentsModel.deleteMany({})
     }
 }
