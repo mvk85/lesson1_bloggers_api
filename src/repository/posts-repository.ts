@@ -1,6 +1,6 @@
 import { removeObjectIdOption } from "../const";
 import { Post, PostCreateFields } from "../types";
-import { PostsModel } from "./db"
+import { PostsModel } from "./models.mongoose";
 
 export const postsRepository = {
     async getPosts(filter: object = {}, skip: number, limit: number,): Promise<Post[]> {

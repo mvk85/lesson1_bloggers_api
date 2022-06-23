@@ -1,7 +1,6 @@
+import { commentsProjection } from "../const";
 import { Comment, FilterComments } from "../types";
-import { CommentsModel } from "./db";
-
-const commentsProjection = {_id: false, postId: false };
+import { CommentsModel } from "./models.mongoose";
 
 export const commentsRepository = {
     async getCountComments(filter: FilterComments): Promise<number> {

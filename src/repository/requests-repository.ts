@@ -1,7 +1,7 @@
 import { addSeconds } from "date-fns";
 import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
-import { RequestsModel } from "./db";
+import { RequestsModel } from "./models.mongoose";
 
 const REQUEST_CHECKING_DURING = -10;
 

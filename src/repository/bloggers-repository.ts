@@ -1,6 +1,6 @@
 import { removeObjectIdOption } from "../const";
 import { Blogger, FilterBloggers } from "../types";
-import { BloggersModel } from "./db"
+import { BloggersModel } from "./models.mongoose";
 
 export const bloggersRepository = {
     async getBloggers(
@@ -26,7 +26,9 @@ export const bloggersRepository = {
     },
 
     async getBloggerById(id: string): Promise<Blogger | null> {
-        const blogger = await BloggersModel.findOne({ id }, removeObjectIdOption)
+        const query = BloggersModel.findOne({ id }, removeObjectIdOption);
+
+        const blogger = await query
 
         return blogger;
     },

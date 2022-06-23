@@ -1,7 +1,6 @@
+import { projectionUserItem } from "../const";
 import { CreatedUserType, User } from "../types";
-import { UsersModel } from "./db"
-
-const projectionUserItem = {_id: false, id: true, login: true, email: true };
+import { UsersModel } from "./models.mongoose";
 
 export const usersRepository = {
    async getUsers(skip: number, limit: number): Promise<User[]> {
