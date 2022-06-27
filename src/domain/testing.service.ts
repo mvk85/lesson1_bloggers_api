@@ -4,7 +4,7 @@ import { postsRepository } from "../repository/posts-repository";
 import { requestsRepository } from "../repository/requests-repository";
 import { usersRepository } from "../repository/users-repository";
 
-export const testingService = {
+class TestingService {
     async deleteAllData() {
         await bloggersRepository.deleteAllBloggers();
         await commentsRepository.deleteAllComments();
@@ -13,3 +13,5 @@ export const testingService = {
         await requestsRepository.deleteAll();
     }
 }
+
+export const testingService = new TestingService();

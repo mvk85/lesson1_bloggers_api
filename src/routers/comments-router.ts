@@ -1,29 +1,26 @@
 import { Request, Response, Router } from "express";
 import { commentsService } from "../domain/comments.service";
-import { checkCommentCredentials, checkUserBearerAuth } from "../middleware/auth.middleware";
+import { authChecker } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { checkCommentExist } from "../middleware/check-exist.middleware";
-import { validationCommentContent } from "../middleware/input-validation.middleware";
+import { existenceChecker } from "../middleware/check-exist.middleware";
+import { inputValidators } from "../middleware/input-validation.middleware";
 
 export const commentsRouter = Router()
 
-commentsRouter.get('/:id', async (req: Request, res: Response) => {
-    const id = req.params.id;
-
-    const comment = await commentsService.getById(id);
-
-    if (comment) {
-        res.send(comment)
-    } else {
-        res.sendStatus(404)
+class CommentsController {
+    async getById(req: Request, res: Response) {
+        const id = req.params.id;
+    
+        const comment = await commentsService.getById(id);
+    
+        if (comment) {
+            res.send(comment)
+        } else {
+            res.sendStatus(404)
+        }
     }
-})
 
-commentsRouter.delete('/:id', 
-    checkCommentExist,
-    checkUserBearerAuth,
-    checkCommentCredentials,
-    async (req: Request, res: Response) => {
+    async deleteById(req: Request, res: Response) {
         const id = req.params.id;
 
         const isDeleted = await commentsService.deleteById(id);
@@ -34,17 +31,10 @@ commentsRouter.delete('/:id',
             res.sendStatus(404)
         }
     }
-)
 
-commentsRouter.put('/:id',
-    checkCommentExist,
-    checkUserBearerAuth,
-    checkCommentCredentials,
-    validationCommentContent,
-    checkValidationErrors,
-    async (req: Request, res: Response) => {
+    async updateById(req: Request, res: Response) {
         const commentId = req.params.id;
-        const isUpdated = await commentsService.updateByid(
+        const isUpdated = await commentsService.updateById(
             commentId, 
             { content: req.body.content}
         )
@@ -55,4 +45,24 @@ commentsRouter.put('/:id',
             res.sendStatus(400)
         }
     }
+}
+
+const commentsController = new CommentsController();
+
+commentsRouter.get('/:id', commentsController.getById)
+
+commentsRouter.delete('/:id', 
+    existenceChecker.checkCommentExist,
+    authChecker.checkUserBearerAuth,
+    authChecker.checkCommentCredentials,
+    commentsController.deleteById
+)
+
+commentsRouter.put('/:id',
+    existenceChecker.checkCommentExist,
+    authChecker.checkUserBearerAuth,
+    authChecker.checkCommentCredentials,
+    inputValidators.validationCommentContent,
+    checkValidationErrors,
+    commentsController.updateById
 )

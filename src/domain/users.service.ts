@@ -22,14 +22,14 @@ export const usersService = {
 
     async addUser(fields: CreateUserFields) {
         const passwordHash = await authService.generateHash(fields.password)
-        const newUser: User = {
-            _id: new ObjectId(),
-            id: generateCustomId(),
-            login: fields.login,
+        const newUser = new User(
+            new ObjectId(),
+            generateCustomId(),
+            fields.login,
             passwordHash,
-            email: fields.email,
-            isConfirmed: true,
-        }
+            fields.email,
+            true,
+        )
 
         const createdUser = await usersRepository.createUser(newUser);
 
@@ -38,15 +38,15 @@ export const usersService = {
 
     async makeRegisteredUser(fields: CreateUserFields) {
         const passwordHash = await authService.generateHash(fields.password)
-        const newUser: User = {
-            _id: new ObjectId(),
-            id: generateCustomId(),
-            login: fields.login,
+        const newUser = new User(
+            new ObjectId(),
+            generateCustomId(),
+            fields.login,
             passwordHash,
-            email: fields.email,
-            isConfirmed: false,
-            confirmCode: generateConfirmCode()
-        }
+            fields.email,
+            false,
+            generateConfirmCode()
+        )
 
         const createdUser = await usersRepository.createUser(newUser);
 

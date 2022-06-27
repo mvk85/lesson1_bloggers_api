@@ -5,7 +5,7 @@ import { RequestsModel } from "./models.mongoose";
 
 const REQUEST_CHECKING_DURING = -10;
 
-export const requestsRepository = {
+class RequestsRepository {
     async getRequestsCountWithDuration(ip: string, endpoint: string) {
         const endDate = newDateInMilliseconds()
         const startDate = addSeconds(endDate, REQUEST_CHECKING_DURING).getTime();
@@ -16,7 +16,7 @@ export const requestsRepository = {
         });
 
         return count;
-    },
+    }
 
     async getRequestsCountByLogin(login: string, endpoint: string) {
         const count = await RequestsModel.countDocuments({ 
@@ -25,15 +25,17 @@ export const requestsRepository = {
         });
 
         return count;
-    },
+    }
 
     async writeRequest(request: BruteForceItem) {
         await RequestsModel.create(request);
 
         return true;
-    },
+    }
 
     async deleteAll() {
         await RequestsModel.deleteMany({})
     }
 }
+
+export const requestsRepository = new RequestsRepository();

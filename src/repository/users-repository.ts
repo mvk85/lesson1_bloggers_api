@@ -2,64 +2,65 @@ import { projectionUserItem } from "../const";
 import { CreatedUserType, User } from "../types";
 import { UsersModel } from "./models.mongoose";
 
-export const usersRepository = {
-   async getUsers(skip: number, limit: number): Promise<User[]> {
-       const users = await UsersModel
-        .find({}, projectionUserItem)
-        .skip(skip)
-        .limit(limit)
-        .lean();
-       
-       return users;
-   },
+class UsersRepository {
+    async getUsers(skip: number, limit: number): Promise<User[]> {
+        const users = await UsersModel
+            .find({})
+            .select(projectionUserItem)
+            .skip(skip)
+            .limit(limit)
+            .lean();
 
-   async getCountUsers(): Promise<number> {
-       const count = await UsersModel.count({})
+        return users;
+    }
 
-       return count;
-   },
+    async getCountUsers(): Promise<number> {
+        const count = await UsersModel.count({})
 
-   async createUser(newUser: User): Promise<CreatedUserType | null> {
-       await UsersModel.create(newUser);
+        return count;
+    }
 
-       const user = await UsersModel.findOne({ id: newUser.id}, projectionUserItem)
+    async createUser(newUser: User): Promise<CreatedUserType | null> {
+        await UsersModel.create(newUser);
 
-       return user;
-   },
+        const user = await UsersModel.findOne({ id: newUser.id }).select(projectionUserItem)
 
-   async deleteUserByid(id: string): Promise<boolean> {
-       const result = await UsersModel.deleteOne({ id })
-       
-       return result.deletedCount === 1;
-   },
+        return user;
+    }
 
-   async findUserByLogin(login: string): Promise<User | null> {
-       const user = await UsersModel.findOne({ login })
-       
-       return user;
-   },
+    async deleteUserByid(id: string): Promise<boolean> {
+        const result = await UsersModel.deleteOne({ id })
 
-   async findUserByEmail(email: string): Promise<User | null> {
-       const user = await UsersModel.findOne({ email })
-       
-       return user;
-   },
+        return result.deletedCount === 1;
+    }
 
-   async findUserByUserId(id: string): Promise<User | null> {
-       const user = await UsersModel.findOne({ id })
-       
-       return user;
-   },
+    async findUserByLogin(login: string): Promise<User | null> {
+        const user = await UsersModel.findOne({ login })
 
-   async findUserByConfirmationCode(code: string): Promise<User | null> {
-       const user = await UsersModel.findOne({ confirmCode: code })
-       
-       return user;
-   },
+        return user;
+    }
+
+    async findUserByEmail(email: string): Promise<User | null> {
+        const user = await UsersModel.findOne({ email })
+
+        return user;
+    }
+
+    async findUserByUserId(id: string): Promise<User | null> {
+        const user = await UsersModel.findOne({ id })
+
+        return user;
+    }
+
+    async findUserByConfirmationCode(code: string): Promise<User | null> {
+        const user = await UsersModel.findOne({ confirmCode: code })
+
+        return user;
+    }
 
     async deleteAllUsers() {
         await UsersModel.deleteMany({})
-    },
+    }
 
     async registrationConfirmed(id: string): Promise<boolean> {
         const resultUpdating = await UsersModel.updateOne(
@@ -68,14 +69,16 @@ export const usersRepository = {
         )
 
         return resultUpdating.matchedCount === 1;
-    },
+    }
 
     async updateConfirmationCode(id: string, code: string) {
         const resultUpdating = await UsersModel.updateOne(
             { id },
-            { $set: { confirmCode: code }}
+            { $set: { confirmCode: code } }
         )
 
         return resultUpdating.matchedCount === 1;
     }
 }
+
+export const usersRepository = new UsersRepository();

@@ -4,14 +4,14 @@ import { postsRepository } from "../repository/posts-repository";
 import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
 import { generateCustomId, generatePaginationData } from "../utils";
 
-export const bloggersService = {
+class BloggersService {
     async getBloggers(
-        filterParams: FilterBloggersParams = {}, 
+        filterParams: FilterBloggersParams = {},
         paginationParams: PaginationParams
     ): Promise<ResponseBloggers> {
-        const filter = filterParams.SearchNameTerm 
-        ? { name: { $regex: filterParams.SearchNameTerm }} 
-        : {};
+        const filter = filterParams.SearchNameTerm
+            ? { name: { $regex: filterParams.SearchNameTerm } }
+            : {};
 
         const bloggersCount = await bloggersRepository.getCountBloggers(filter);
         const paginationData = generatePaginationData(paginationParams, bloggersCount)
@@ -27,10 +27,10 @@ export const bloggersService = {
             totalCount: bloggersCount,
             page: paginationData.pageNumber
         };
-    },
+    }
 
     async getPostsByBloggerId(
-        bloggerId: string, 
+        bloggerId: string,
         paginationParams: PaginationParams
     ): Promise<ResponsePostsByBloggerId> {
         const filter = { bloggerId };
@@ -48,32 +48,32 @@ export const bloggersService = {
             totalCount: postsCount,
             page: paginationData.pageNumber
         };
-    },
+    }
 
     async getBloggerById(id: string): Promise<Blogger | null> {
         const blogger = await bloggersRepository.getBloggerById(id)
 
         return blogger
-    },
+    }
 
     async createBlogger(name: string, youtubeUrl: string) {
-        const newBloggers: Blogger = {
-            _id: new ObjectId(),
-            id: generateCustomId(),
+        const newBloggers: Blogger = new Blogger(
+            new ObjectId(),
+            generateCustomId(),
             name,
             youtubeUrl
-        }
+        )
 
         const createdBlogger = await bloggersRepository.createBlogger(newBloggers)
 
         return createdBlogger;
-    },
+    }
 
     async deleteBloggerById(id: string) {
         const isDeleted = await bloggersRepository.deleteBloggerById(id);
 
         return isDeleted;
-    },
+    }
 
     async updateBloggerById(id: string, data: { name: string, youtubeUrl: string }) {
         const isUpdated = await bloggersRepository.updateBloggerById(id, data);
@@ -81,3 +81,5 @@ export const bloggersService = {
         return isUpdated;
     }
 }
+
+export const bloggersService = new BloggersService();

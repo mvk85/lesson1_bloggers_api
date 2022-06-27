@@ -2,7 +2,7 @@ import { removeObjectIdOption } from "../const";
 import { Blogger, FilterBloggers } from "../types";
 import { BloggersModel } from "./models.mongoose";
 
-export const bloggersRepository = {
+class BloggersRepository {
     async getBloggers(
         filter: FilterBloggers, 
         skip: number,
@@ -15,7 +15,7 @@ export const bloggersRepository = {
             .lean();
 
         return bloggers;
-    },
+    }
 
     async getCountBloggers(
         filter: FilterBloggers, 
@@ -23,7 +23,7 @@ export const bloggersRepository = {
         const count = await BloggersModel.count(filter)
 
         return count;
-    },
+    }
 
     async getBloggerById(id: string): Promise<Blogger | null> {
         const query = BloggersModel.findOne({ id }, removeObjectIdOption);
@@ -31,7 +31,7 @@ export const bloggersRepository = {
         const blogger = await query
 
         return blogger;
-    },
+    }
 
     async createBlogger(newBlogger: Blogger): Promise<Blogger | null> {
         await BloggersModel.create(newBlogger)
@@ -39,13 +39,13 @@ export const bloggersRepository = {
         const blogger = await BloggersModel.findOne({ id: newBlogger.id }, removeObjectIdOption)
 
         return blogger;
-    },
+    }
 
     async deleteBloggerById(id: string) {
         const result = await BloggersModel.deleteOne({ id })
 
         return result.deletedCount === 1;
-    },
+    }
 
     async updateBloggerById(id: string, {name, youtubeUrl}: { name: string, youtubeUrl: string }) {
         const result = await BloggersModel.updateOne(
@@ -54,9 +54,11 @@ export const bloggersRepository = {
         )
 
         return result.matchedCount === 1;
-    },
+    }
 
     async deleteAllBloggers() {
         await BloggersModel.deleteMany({})
     }
 }
+
+export const bloggersRepository = new BloggersRepository();

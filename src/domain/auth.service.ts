@@ -4,12 +4,12 @@ import { usersRepository } from '../repository/users-repository';
 import { CreateUserFields } from '../types';
 import { usersService } from './users.service';
 
-export const authService = {
+class AuthService {
     async generateHash(password: string) {
         const hash = await bcrypt.hash(password, 10)
 
         return hash;
-    },
+    }
 
     async getUserByCredentials(login: string, password: string) {
         const user = await usersRepository.findUserByLogin(login)
@@ -19,7 +19,7 @@ export const authService = {
         const resultCompare = await bcrypt.compare(password, user.passwordHash);
 
         return resultCompare ? user : null
-    },
+    }
 
     async registration(createUserFields: CreateUserFields): Promise<boolean> {
         const createdUser = await usersService.makeRegisteredUser(createUserFields)
@@ -33,7 +33,7 @@ export const authService = {
         const isSended = await emailManager.sendRegistrationCode(user)
 
         return isSended;
-    },
+    }
 
     async registrationConfirmation(code: string) {
         const user = await usersRepository.findUserByConfirmationCode(code)
@@ -43,7 +43,7 @@ export const authService = {
         const savedIsConfirmed = await usersRepository.registrationConfirmed(user.id)
 
         return savedIsConfirmed;
-    },
+    }
 
     async registrationEmailResending(email: string) {
         const user = await usersRepository.findUserByEmail(email)
@@ -63,3 +63,5 @@ export const authService = {
         return isSended;
     }
 }
+
+export const authService = new AuthService();

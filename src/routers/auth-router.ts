@@ -1,19 +1,14 @@
 import { Request, Response, Router } from "express";
 import { authService } from "../domain/auth.service";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationConfirmationCode, validationConfirmedCode, validationConfirmedCodeByEmail, validationExistConfirmationCode, validationExistEmail, validationExistUserEmail, validationExistUserLogin, validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
-import { checkBruteForceByIp } from "../middleware/request-middleware";
+import { inputValidators } from "../middleware/input-validation.middleware";
+import { ipChecker } from "../middleware/request-middleware";
 import { jwtUtility } from "../utils";
 
 export const authRouter = Router();
 
-authRouter.post('/login',
-    checkBruteForceByIp,
-    validationUserLogin,
-    validationUserPassword,
-    checkValidationErrors,
-    // checkBruteForceByLogin,
-    async (req: Request, res: Response) => {
+class AuthController {
+    async login (req: Request, res: Response) {
         const user = await authService.getUserByCredentials(req.body.login, req.body.password)
 
         if (!user) {
@@ -26,17 +21,8 @@ authRouter.post('/login',
 
         res.send({ token })
     }
-)
 
-authRouter.post('/registration',
-    checkBruteForceByIp,
-    validationUserLogin,
-    validationUserPassword,
-    validationUserEmail,
-    validationExistUserLogin,
-    validationExistUserEmail,
-    checkValidationErrors,
-    async (req: Request, res: Response) => {
+    async registration (req: Request, res: Response) {
         const isRegistrated = await authService.registration({
             login: req.body.login,
             email: req.body.email,
@@ -49,15 +35,8 @@ authRouter.post('/registration',
             res.sendStatus(400)
         }
     }
-)
 
-authRouter.post('/registration-confirmation',
-    checkBruteForceByIp,
-    validationConfirmationCode,
-    validationConfirmedCode,
-    validationExistConfirmationCode,
-    checkValidationErrors,
-    async (req: Request, res: Response) => {
+    async registrationConfirmation (req: Request, res: Response) {
         const confirmationCode = req.body.code;
 
         const isConfirmed = await authService.registrationConfirmation(confirmationCode)
@@ -68,15 +47,8 @@ authRouter.post('/registration-confirmation',
             res.sendStatus(400)
         }
     }
-)
 
-authRouter.post('/registration-email-resending',
-    checkBruteForceByIp,
-    validationUserEmail,
-    validationExistEmail,
-    validationConfirmedCodeByEmail,
-    checkValidationErrors,
-    async (req: Request, res: Response) => {
+    async registrationEmailResending (req: Request, res: Response) {
         const email = req.body.email
 
         const isSendedNewCode = await authService.registrationEmailResending(email)
@@ -87,4 +59,43 @@ authRouter.post('/registration-email-resending',
             res.sendStatus(400)
         }
     }
+}
+
+const authController = new AuthController();
+
+authRouter.post('/login',
+    ipChecker.checkBruteForceByIp,
+    inputValidators.validationUserLogin,
+    inputValidators.validationUserPassword,
+    checkValidationErrors,
+    authController.login
+)
+
+authRouter.post('/registration',
+    ipChecker.checkBruteForceByIp,
+    inputValidators.validationUserLogin,
+    inputValidators.validationUserPassword,
+    inputValidators.validationUserEmail,
+    inputValidators.validationExistUserLogin,
+    inputValidators.validationExistUserEmail,
+    checkValidationErrors,
+    authController.registration
+)
+
+authRouter.post('/registration-confirmation',
+    ipChecker.checkBruteForceByIp,
+    inputValidators.validationConfirmationCode,
+    inputValidators.validationConfirmedCode,
+    inputValidators.validationExistConfirmationCode,
+    checkValidationErrors,
+    authController.registrationConfirmation
+)
+
+authRouter.post('/registration-email-resending',
+    ipChecker.checkBruteForceByIp,
+    inputValidators.validationUserEmail,
+    inputValidators.validationExistEmail,
+    inputValidators.validationConfirmedCodeByEmail,
+    checkValidationErrors,
+    authController.registrationEmailResending
 )

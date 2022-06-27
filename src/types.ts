@@ -1,12 +1,15 @@
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 
 export type IdType = string;
 
-export type Blogger = WithId<{
-    id: IdType;
-    name: string;
-    youtubeUrl: string;
-}>
+export class Blogger {
+    constructor(
+        public _id: ObjectId,
+        public id: IdType,
+        public name: string,
+        public youtubeUrl: string,
+    ) {}
+}
 
 export type ErrorMessage = {
     message: string;
@@ -18,26 +21,29 @@ export type ErrorResponse = {
     resultCode: number;
 }
 
-export type Post = WithId<{
-    id: IdType;
-    title: string;
-    shortDescription: string;
-    content: string;
-    bloggerId: string;
-    bloggerName: string;
-}>
+export class Post {
+    constructor(
+        _id: ObjectId,
+        public id: IdType,
+        public title: string,
+        public shortDescription: string,
+        public content: string,
+        public bloggerId: string,
+        public bloggerName: string,
+    ) {}   
+}
 
-export type User = WithId<{
-    passwordHash: string;
-    isConfirmed: boolean;
-    confirmCode?: string | null;
-} & UserItem>
-
-export type UserItem = WithId<{
-    id:	IdType;
-    login: string;
-    email: string;
-}>
+export class User {
+    constructor(
+        public _id: ObjectId,
+        public id:	IdType,
+        public login: string,
+        public passwordHash: string,
+        public email: string,
+        public isConfirmed: boolean,
+        public confirmCode?: string | null,
+    ){}
+}
 
 export type CreatedUserType = {
     id:	IdType;
@@ -45,14 +51,17 @@ export type CreatedUserType = {
     email: string;
 }
 
-export type Comment = WithId<{
-    id: string;
-    content: string;
-    userId: string;
-    userLogin: string;
-    addedAt: string;
-    postId: string;
-}>
+export class Comment {
+    constructor(
+        public _id: ObjectId,
+        public id: string,
+        public content: string,
+        public userId: string,
+        public userLogin: string,
+        public addedAt: string,
+        public postId: string,
+    ) {}   
+}
 
 export type ResponseCommentType = Omit<Comment, 'postId'>
 
@@ -131,8 +140,10 @@ export enum EmailStatus {
     registration = 'registration'
 }
 
-export type BruteForceItem = {
-    ip: string;
-    date: number;
-    endpoint: string;
+export class BruteForceItem {
+    constructor(
+        public ip: string,
+        public endpoint: string,
+        public date: number,
+    ) {}
 }

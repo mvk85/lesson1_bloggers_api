@@ -1,31 +1,26 @@
 import { Request, Response, Router } from "express";
 import { usersService } from "../domain/users.service";
-import { checkAdminBasicAuth } from "../middleware/auth.middleware";
+import { authChecker } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { validationUserEmail, validationUserLogin, validationUserPassword } from "../middleware/input-validation.middleware";
+import { inputValidators } from "../middleware/input-validation.middleware";
 
 export const usersRouter = Router();
 
-usersRouter.get("/", async (req: Request, res: Response) => {
-    const { PageNumber, PageSize } = req.query;
+class UserController {
+    async getUsers(req: Request, res: Response) {
+        const { PageNumber, PageSize } = req.query;
+    
+        const responseUserObject = await usersService.getUsers(
+            { 
+                PageNumber: PageNumber as string, 
+                PageSize: PageSize as string 
+            }
+        )
+    
+        res.send(responseUserObject);
+    }
 
-    const responseUserObject = await usersService.getUsers(
-        { 
-            PageNumber: PageNumber as string, 
-            PageSize: PageSize as string 
-        }
-    )
-
-    res.send(responseUserObject);
-})
-
-usersRouter.post("/",
-    checkAdminBasicAuth,
-    validationUserLogin,
-    validationUserPassword,
-    validationUserEmail,
-    checkValidationErrors,
-    async (req: Request, res: Response) => {
+    async createUser(req: Request, res: Response) {
         const {login, password, email} = req.body;
 
         const user = await usersService.addUser({ login, password, email })
@@ -38,11 +33,8 @@ usersRouter.post("/",
 
         res.status(201).send(user);
     }
-)
 
-usersRouter.delete("/:userId", 
-    checkAdminBasicAuth,
-    async (req: Request, res: Response) => {
+    async deleteUserById(req: Request, res: Response) {
         const userId = req.params.userId;
 
         const isDeleted = await usersService.deleteUserById(userId);
@@ -55,4 +47,22 @@ usersRouter.delete("/:userId",
 
         res.sendStatus(204);
     }
+}
+
+const userController = new UserController();
+
+usersRouter.get("/", userController.getUsers)
+
+usersRouter.post("/",
+    authChecker.checkAdminBasicAuth,
+    inputValidators.validationUserLogin,
+    inputValidators.validationUserPassword,
+    inputValidators.validationUserEmail,
+    checkValidationErrors,
+    userController.createUser
+)
+
+usersRouter.delete("/:userId", 
+    authChecker.checkAdminBasicAuth,
+    userController.deleteUserById
 )

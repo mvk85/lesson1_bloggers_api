@@ -2,12 +2,12 @@ import { commentsProjection } from "../const";
 import { Comment, FilterComments } from "../types";
 import { CommentsModel } from "./models.mongoose";
 
-export const commentsRepository = {
+class CommentsRepository {
     async getCountComments(filter: FilterComments): Promise<number> {
         const count = await CommentsModel.count(filter)
 
         return count;
-    },
+    }
 
     async getComments(filter: FilterComments, skip: number, limit: number) {
         const comments = await CommentsModel
@@ -17,7 +17,7 @@ export const commentsRepository = {
             .lean();
 
         return comments
-    },
+    }
 
     async createComment(newComment: Comment) {
         await CommentsModel.create(newComment)
@@ -28,19 +28,19 @@ export const commentsRepository = {
         )
 
         return createdComment;
-    },
+    }
 
     async getCommentByid(id: string) {
         const comment = await CommentsModel.findOne({ id }, commentsProjection)
 
         return comment;
-    },
+    }
 
     async deleteCommentById(id: string) {
         const result = await CommentsModel.deleteOne({ id })
 
         return result.deletedCount === 1;
-    },
+    }
 
     async updateCommentById(id: string, { content }: { content: string }) {
         const result = await CommentsModel.updateOne(
@@ -49,9 +49,11 @@ export const commentsRepository = {
         )
 
         return result.matchedCount === 1;
-    },
+    }
 
     async deleteAllComments() {
         await CommentsModel.deleteMany({})
     }
 }
+
+export const commentsRepository = new CommentsRepository();

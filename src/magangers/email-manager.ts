@@ -1,7 +1,7 @@
 import { emailAtapter } from "../adapters/email-adapter";
 import { User } from "../types";
 
-export const emailManager = {
+class EmailManager {
     async sendRegistrationCode(user: User): Promise<boolean> {
         try {
             const subject = "You need to confirm your email";
@@ -30,3 +30,5 @@ export const emailManager = {
         }
     }
 }
+
+export const emailManager = new EmailManager();
