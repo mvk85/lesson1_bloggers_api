@@ -1,21 +1,39 @@
 import { Request, Response, Router } from "express";
-import { bloggersService } from "../domain/bloggers.service";
-import { postsService } from "../domain/posts.service";
-import { authChecker } from "../middleware/auth.middleware";
-import { bloggerValidator } from "../middleware/blogger-id-validation";
+import { BloggersService } from "../domain/bloggers.service";
+import { PostsService } from "../domain/posts.service";
+import { AuthChecker } from "../middleware/auth.middleware";
+import { BloggerValidator } from "../middleware/blogger-id-validation";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { inputValidators } from "../middleware/input-validation.middleware";
+import { InputValidators } from "../middleware/input-validation.middleware";
 
 export const bloggersRouter = Router()
 
 class BloggerController {
+    bloggersService: BloggersService
+    
+    authChecker: AuthChecker
+
+    postsService: PostsService
+
+    bloggerValidator: BloggerValidator
+
+    inputValidators: InputValidators
+
+    constructor() {
+        this.bloggersService = new BloggersService()
+        this.authChecker = new AuthChecker()
+        this.postsService = new PostsService()
+        this.bloggerValidator = new BloggerValidator()
+        this.inputValidators = new InputValidators()
+    }
+
     async getBloggers(req: Request, res: Response) {
         const { 
             SearchNameTerm, 
             PageNumber, 
             PageSize 
         } = req.query;
-        const response = await bloggersService.getBloggers(
+        const response = await this.bloggersService.getBloggers(
             { SearchNameTerm: SearchNameTerm as string },
             { 
                 PageNumber: PageNumber as string, 
@@ -27,13 +45,13 @@ class BloggerController {
     }
 
     async createBlogger(req: Request, res: Response) {
-        const newBlogger = await bloggersService.createBlogger(req.body.name, req.body.youtubeUrl)
+        const newBlogger = await this.bloggersService.createBlogger(req.body.name, req.body.youtubeUrl)
 
         res.status(201).send(newBlogger)
     }
 
     async getBloggerById(req: Request, res: Response) {
-        const blogger = await bloggersService.getBloggerById(req.params.id);
+        const blogger = await this.bloggersService.getBloggerById(req.params.id);
     
         if (blogger) {
             res.status(200).send(blogger)
@@ -43,7 +61,7 @@ class BloggerController {
     }
 
     async updateBloggerById (req: Request, res: Response) {
-        const isUpdated = await bloggersService.updateBloggerById(
+        const isUpdated = await this.bloggersService.updateBloggerById(
             req.params.id,
             {
                 name: req.body.name,
@@ -52,7 +70,7 @@ class BloggerController {
         )
 
         if (!isUpdated) {
-            res.send(404);
+            res.sendStatus(404);
             return;
         }
 
@@ -60,12 +78,12 @@ class BloggerController {
     }
 
     async deleteBloggerById(req: Request, res: Response) {
-        const isDeleted = await bloggersService.deleteBloggerById(req.params.id);
+        const isDeleted = await this.bloggersService.deleteBloggerById(req.params.id);
         
         if (!isDeleted) {
-            res.send(404)
+            res.sendStatus(404)
         } else {
-            res.send(204)
+            res.sendStatus(204)
         }
     }
 
@@ -74,7 +92,7 @@ class BloggerController {
             PageNumber, 
             PageSize 
         } = req.query;
-        const response = await bloggersService.getPostsByBloggerId(
+        const response = await this.bloggersService.getPostsByBloggerId(
             req.params.id,
             { 
                 PageNumber: PageNumber as string, 
@@ -95,7 +113,7 @@ class BloggerController {
             bloggerId
         }
 
-        const newPost = await postsService.createPost(bodyFields)
+        const newPost = await this.postsService.createPost(bodyFields)
 
         if (!newPost) {
             res.sendStatus(400)
@@ -109,42 +127,42 @@ class BloggerController {
 
 const bloggersController = new BloggerController();
 
-bloggersRouter.get("/", bloggersController.getBloggers)
+bloggersRouter.get("/", bloggersController.getBloggers.bind(bloggersController))
 
 bloggersRouter.post("/", 
-    authChecker.checkAdminBasicAuth,
-    inputValidators.validationBloggerName,
-    inputValidators.validationBloggerYoutubeUrl,
+    bloggersController.authChecker.checkAdminBasicAuth.bind(bloggersController.authChecker),
+    bloggersController.inputValidators.validationBloggerName.bind(bloggersController.inputValidators),
+    bloggersController.inputValidators.validationBloggerYoutubeUrl.bind(bloggersController.inputValidators),
     checkValidationErrors,
-    bloggersController.createBlogger
+    bloggersController.createBlogger.bind(bloggersController)
 )
 
-bloggersRouter.get("/:id", bloggersController.getBloggerById)
+bloggersRouter.get("/:id", bloggersController.getBloggerById.bind(bloggersController).bind(bloggersController))
 
 bloggersRouter.put("/:id", 
-    authChecker.checkAdminBasicAuth,
-    inputValidators.validationBloggerName,
-    inputValidators.validationBloggerYoutubeUrl,
+    bloggersController.authChecker.checkAdminBasicAuth.bind(bloggersController.authChecker),
+    bloggersController.inputValidators.validationBloggerName.bind(bloggersController.inputValidators),
+    bloggersController.inputValidators.validationBloggerYoutubeUrl.bind(bloggersController.inputValidators),
     checkValidationErrors,
-    bloggersController.updateBloggerById
+    bloggersController.updateBloggerById.bind(bloggersController)
 )
 
 bloggersRouter.delete("/:id", 
-    authChecker.checkAdminBasicAuth,
-    bloggersController.deleteBloggerById
+    bloggersController.authChecker.checkAdminBasicAuth.bind(bloggersController.authChecker),
+    bloggersController.deleteBloggerById.bind(bloggersController)
 )
 
 bloggersRouter.get("/:id/posts", 
-    bloggerValidator.bloggerIdValidation,
-    bloggersController.getPostsByBloggerId
+    bloggersController.bloggerValidator.bloggerIdValidation.bind(bloggersController.bloggerValidator),
+    bloggersController.getPostsByBloggerId.bind(bloggersController)
 )
 
 bloggersRouter.post("/:id/posts", 
-    authChecker.checkAdminBasicAuth,
-    bloggerValidator.bloggerIdValidation,
-    inputValidators.validationPostTitle,
-    inputValidators.validationPostShortDescription,
-    inputValidators.validationPostContent,
+    bloggersController.authChecker.checkAdminBasicAuth.bind(bloggersController),
+    bloggersController.bloggerValidator.bloggerIdValidation.bind(bloggersController),
+    bloggersController.inputValidators.validationPostTitle.bind(bloggersController),
+    bloggersController.inputValidators.validationPostShortDescription.bind(bloggersController),
+    bloggersController.inputValidators.validationPostContent.bind(bloggersController),
     checkValidationErrors,
-    bloggersController.createPost
+    bloggersController.createPost.bind(bloggersController)
 )

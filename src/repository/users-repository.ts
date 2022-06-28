@@ -2,7 +2,7 @@ import { projectionUserItem } from "../const";
 import { CreatedUserType, User } from "../types";
 import { UsersModel } from "./models.mongoose";
 
-class UsersRepository {
+export class UsersRepository {
     async getUsers(skip: number, limit: number): Promise<User[]> {
         const users = await UsersModel
             .find({})
@@ -80,5 +80,3 @@ class UsersRepository {
         return resultUpdating.matchedCount === 1;
     }
 }
-
-export const usersRepository = new UsersRepository();

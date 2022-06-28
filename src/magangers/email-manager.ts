@@ -1,7 +1,13 @@
-import { emailAtapter } from "../adapters/email-adapter";
+import { EmailAtapter } from "../adapters/email-adapter";
 import { User } from "../types";
 
-class EmailManager {
+export class EmailManager {
+    emailAtapter: EmailAtapter
+
+    constructor() {
+        this.emailAtapter = new EmailAtapter();
+    }
+
     async sendRegistrationCode(user: User): Promise<boolean> {
         try {
             const subject = "You need to confirm your email";
@@ -15,7 +21,7 @@ class EmailManager {
             `;
             const emailTitle = "Registration";
 
-            await emailAtapter.sendEmail(
+            await this.emailAtapter.sendEmail(
                 user.email, 
                 subject, 
                 message,
@@ -30,5 +36,3 @@ class EmailManager {
         }
     }
 }
-
-export const emailManager = new EmailManager();

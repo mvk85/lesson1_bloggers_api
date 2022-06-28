@@ -1,14 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import { requestsService } from "../domain/requests.service";
+import { RequestsService } from "../domain/requests.service";
 import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
 
-class IpChecker {
+export class IpChecker {
+    requestsService: RequestsService
+
+    constructor() {
+        this.requestsService = new RequestsService()
+    }
+
     async checkBruteForceByIp(req: Request, res: Response, next: NextFunction) {
         const ip = req.ip;
         const endpoint = req.baseUrl + req.path;
     
-        const isCorrectRequest = await requestsService.getRequestsCountWithDuration(ip, endpoint);
+        const isCorrectRequest = await this.requestsService.getRequestsCountWithDuration(ip, endpoint);
     
         if (!isCorrectRequest) {
             res.sendStatus(429)
@@ -22,11 +28,8 @@ class IpChecker {
             newDateInMilliseconds(),
         )
     
-        await requestsService.saveRequest(newRequestItem)
+        await this.requestsService.saveRequest(newRequestItem)
     
         next()
     }
 }
-
-export const ipChecker = new IpChecker();
-

@@ -1,8 +1,15 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "./const";
 import { settings } from "./setting";
 import { PaginationParams, User } from "./types";
+
+export async function generateHash(password: string) {
+    const hash = await bcrypt.hash(password, 10)
+
+    return hash;
+}
 
 export function generatePaginationData(
     paginationParams: PaginationParams,

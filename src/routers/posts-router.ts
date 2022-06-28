@@ -1,16 +1,31 @@
 import { Request, Response, Router } from "express";
-import { postsService } from "../domain/posts.service";
-import { authChecker } from "../middleware/auth.middleware";
+import { PostsService } from "../domain/posts.service";
+import { AuthChecker } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { existenceChecker } from "../middleware/check-exist.middleware";
-import { inputValidators } from "../middleware/input-validation.middleware";
+import { ExistenceChecker } from "../middleware/check-exist.middleware";
+import { InputValidators } from "../middleware/input-validation.middleware";
 
 export const postsRouter = Router();
 
 class PostsController {
+    authChecker: AuthChecker
+
+    postsService: PostsService
+
+    existenceChecker: ExistenceChecker
+
+    inputValidators: InputValidators
+
+    constructor() {
+        this.authChecker = new AuthChecker();
+        this.postsService = new PostsService();
+        this.existenceChecker = new ExistenceChecker();
+        this.inputValidators = new InputValidators();
+    }
+
     async getPosts(req: Request, res: Response) {
         const { PageNumber, PageSize } = req.query;
-        const response = await postsService.getPosts(
+        const response = await this.postsService.getPosts(
             { 
                 PageNumber: PageNumber as string, 
                 PageSize: PageSize as string 
@@ -28,7 +43,7 @@ class PostsController {
             bloggerId: req.body.bloggerId
         }
 
-        const newPost = await postsService.createPost(bodyFields)
+        const newPost = await this.postsService.createPost(bodyFields)
 
         if (!newPost) {
             res.sendStatus(400)
@@ -42,7 +57,7 @@ class PostsController {
     async getPostById(req: Request, res: Response) {
         const postId = req.params.id;
     
-        const post = await postsService.getPostById(postId)
+        const post = await this.postsService.getPostById(postId)
     
         if (!post) {
             res.sendStatus(404)
@@ -61,7 +76,7 @@ class PostsController {
             bloggerId: req.body.bloggerId
         }
 
-        const isUpdated = await postsService.updatePostById(postId, bodyFields)
+        const isUpdated = await this.postsService.updatePostById(postId, bodyFields)
 
         if (!isUpdated) {
             res.sendStatus(400)
@@ -73,7 +88,7 @@ class PostsController {
     async deletePostById(req: Request, res: Response) {
         const postId = req.params.id;
 
-        const isDeleted = await postsService.deletePostById(postId)
+        const isDeleted = await this.postsService.deletePostById(postId)
 
         if (!isDeleted) {
             res.send(404)
@@ -85,7 +100,7 @@ class PostsController {
     async createComment(req: Request, res: Response) {
         const content = req.body.content;
 
-        const newComment = await postsService.createComment({
+        const newComment = await this.postsService.createComment({
             content,
             userId: req.user!.userId,
             userLogin: req.user!.userLogin,
@@ -103,7 +118,7 @@ class PostsController {
 
     async getCommentsByPostId(req: Request, res: Response) {
         const { PageNumber, PageSize } = req.query;
-        const response = await postsService.getCommentsByPostId(
+        const response = await this.postsService.getCommentsByPostId(
             req.params.id,
             { 
                 PageNumber: PageNumber as string, 
@@ -117,46 +132,46 @@ class PostsController {
 
 const postsController = new PostsController();
 
-postsRouter.get("/", postsController.getPosts)
+postsRouter.get("/", postsController.getPosts.bind(postsController))
 
 postsRouter.post("/",
-    authChecker.checkAdminBasicAuth,
-    inputValidators.validationPostTitle,
-    inputValidators.validationPostShortDescription,
-    inputValidators.validationPostContent,
-    inputValidators.validationPostBloggerId,
+    postsController.authChecker.checkAdminBasicAuth.bind(postsController.authChecker),
+    postsController.inputValidators.validationPostTitle.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostShortDescription.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostContent.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostBloggerId.bind(postsController.inputValidators),
     checkValidationErrors,
-    postsController.createPost
+    postsController.createPost.bind(postsController)
 )
 
-postsRouter.get("/:id", postsController.getPostById)
+postsRouter.get("/:id", postsController.getPostById.bind(postsController))
 
 postsRouter.put("/:id",
-    authChecker.checkAdminBasicAuth,
-    existenceChecker.checkPostExist,
-    inputValidators.validationPostTitle,
-    inputValidators.validationPostShortDescription,
-    inputValidators.validationPostContent,
-    inputValidators.validationPostBloggerId,
+    postsController.authChecker.checkAdminBasicAuth.bind(postsController),
+    postsController.existenceChecker.checkPostExist.bind(postsController.existenceChecker),
+    postsController.inputValidators.validationPostTitle.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostShortDescription.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostContent.bind(postsController.inputValidators),
+    postsController.inputValidators.validationPostBloggerId.bind(postsController.inputValidators),
     checkValidationErrors,
-    postsController.updatePostById
+    postsController.updatePostById.bind(postsController)
 )
 
 postsRouter.delete("/:id", 
-    authChecker.checkAdminBasicAuth,
-    existenceChecker.checkPostExist,
-    postsController.deletePostById
+    postsController.authChecker.checkAdminBasicAuth.bind(postsController.authChecker),
+    postsController.existenceChecker.checkPostExist.bind(postsController.existenceChecker),
+    postsController.deletePostById.bind(postsController)
 )
 
 postsRouter.post('/:id/comments', 
-    authChecker.checkUserBearerAuth,
-    existenceChecker.checkPostExist,
-    inputValidators.validationCommentContent,
+    postsController.authChecker.checkUserBearerAuth.bind(postsController.authChecker),
+    postsController.existenceChecker.checkPostExist.bind(postsController.existenceChecker),
+    postsController.inputValidators.validationCommentContent.bind(postsController.inputValidators),
     checkValidationErrors,
-    postsController.createComment
+    postsController.createComment.bind(postsController)
 )
 
 postsRouter.get('/:id/comments', 
-    existenceChecker.checkPostExist,
-    postsController.getCommentsByPostId
+    postsController.existenceChecker.checkPostExist.bind(postsController.existenceChecker),
+    postsController.getCommentsByPostId.bind(postsController)
 )

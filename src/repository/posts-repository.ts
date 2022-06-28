@@ -2,7 +2,7 @@ import { removeObjectIdOption } from "../const";
 import { Post, PostCreateFields } from "../types";
 import { PostsModel } from "./models.mongoose";
 
-class PostsRepository {
+export class PostsRepository {
     async getPosts(filter: object = {}, skip: number, limit: number,): Promise<Post[]> {
         const posts = await PostsModel.find(filter, removeObjectIdOption)
             .skip(skip)
@@ -48,5 +48,3 @@ class PostsRepository {
         await PostsModel.deleteMany({})
     }
 }
-
-export const postsRepository = new PostsRepository();

@@ -1,16 +1,28 @@
 import { ObjectId } from "mongodb";
-import { bloggersRepository } from "../repository/bloggers-repository";
-import { commentsRepository } from "../repository/comments-repository";
-import { postsRepository } from "../repository/posts-repository";
+import { BloggersRepository } from "../repository/bloggers-repository";
+import { CommentsRepository } from "../repository/comments-repository";
+import { PostsRepository } from "../repository/posts-repository";
 import { Comment, PaginationParams, Post, PostCreateFields, ResponseCommentsByPostId, ResponsePosts } from "../types";
 import { generateCustomId, generatePaginationData, newIsoDate } from "../utils";
 
-class PostsService {
+export class PostsService {
+    bloggersRepository: BloggersRepository
+    
+    commentsRepository: CommentsRepository
+
+    postsRepository: PostsRepository
+
+    constructor() {
+        this.bloggersRepository = new BloggersRepository();
+        this.commentsRepository = new CommentsRepository();
+        this.postsRepository = new PostsRepository();
+    }
+
     async getPosts(paginationParams: PaginationParams): Promise<ResponsePosts> {
-        const postsCount = await postsRepository.getCountPosts();
+        const postsCount = await this.postsRepository.getCountPosts();
         const paginationData = generatePaginationData(paginationParams, postsCount)
 
-        const posts = await postsRepository.getPosts(
+        const posts = await this.postsRepository.getPosts(
             {}, paginationData.skip, paginationData.pageSize
         );
 
@@ -24,13 +36,13 @@ class PostsService {
     }
 
     async getPostById(id: string): Promise<Post | null> {
-        const post = await postsRepository.getPostById(id);
+        const post = await this.postsRepository.getPostById(id);
         
         return post;
     }
 
     async createPost(fields: PostCreateFields): Promise<Post | null> {
-        const blogger = await bloggersRepository.getBloggerById(fields.bloggerId);
+        const blogger = await this.bloggersRepository.getBloggerById(fields.bloggerId);
 
         if (!blogger) return null;
 
@@ -44,19 +56,19 @@ class PostsService {
             blogger.name,
         )
 
-        const createdPost = await postsRepository.createPost(newPosts)
+        const createdPost = await this.postsRepository.createPost(newPosts)
 
         return createdPost;
     }
 
     async deletePostById(id: string) {
-        const isDeleted = await postsRepository.deletePostById(id);
+        const isDeleted = await this.postsRepository.deletePostById(id);
 
         return isDeleted;        
     }
 
     async updatePostById(id: string, fields: PostCreateFields) {
-        const isUpdated = await postsRepository.updatePostById(id, fields);
+        const isUpdated = await this.postsRepository.updatePostById(id, fields);
 
         return isUpdated;
     }
@@ -77,7 +89,7 @@ class PostsService {
             postId
         )
 
-        const createdComment = await commentsRepository.createComment(newComment)
+        const createdComment = await this.commentsRepository.createComment(newComment)
 
         return createdComment;
     }
@@ -86,11 +98,11 @@ class PostsService {
         postId: string,
         paginationParams: PaginationParams
     ): Promise<ResponseCommentsByPostId> {
-        const commentsCount = await commentsRepository.getCountComments({ postId });
+        const commentsCount = await this.commentsRepository.getCountComments({ postId });
         const paginationData = generatePaginationData(paginationParams, commentsCount)
         const filter = { postId }
 
-        const comments = await commentsRepository.getComments(
+        const comments = await this.commentsRepository.getComments(
             filter, paginationData.skip, paginationData.pageSize
         )
 
@@ -104,4 +116,3 @@ class PostsService {
     }
 }
 
-export const postsService = new PostsService();

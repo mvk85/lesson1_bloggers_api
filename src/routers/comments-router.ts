@@ -1,17 +1,32 @@
 import { Request, Response, Router } from "express";
-import { commentsService } from "../domain/comments.service";
-import { authChecker } from "../middleware/auth.middleware";
+import { CommentsService } from "../domain/comments.service";
+import { AuthChecker } from "../middleware/auth.middleware";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { existenceChecker } from "../middleware/check-exist.middleware";
-import { inputValidators } from "../middleware/input-validation.middleware";
+import { ExistenceChecker } from "../middleware/check-exist.middleware";
+import { InputValidators } from "../middleware/input-validation.middleware";
 
 export const commentsRouter = Router()
 
 class CommentsController {
+    authChecker: AuthChecker
+
+    commentsService: CommentsService
+
+    existenceChecker: ExistenceChecker
+
+    inputValidators: InputValidators
+
+    constructor() {
+        this.authChecker = new AuthChecker()
+        this.commentsService = new CommentsService()
+        this.existenceChecker = new ExistenceChecker();
+        this.inputValidators = new InputValidators();
+    }
+
     async getById(req: Request, res: Response) {
         const id = req.params.id;
     
-        const comment = await commentsService.getById(id);
+        const comment = await this.commentsService.getById(id);
     
         if (comment) {
             res.send(comment)
@@ -23,7 +38,7 @@ class CommentsController {
     async deleteById(req: Request, res: Response) {
         const id = req.params.id;
 
-        const isDeleted = await commentsService.deleteById(id);
+        const isDeleted = await this.commentsService.deleteById(id);
 
         if (isDeleted) {
             res.sendStatus(204)
@@ -34,7 +49,7 @@ class CommentsController {
 
     async updateById(req: Request, res: Response) {
         const commentId = req.params.id;
-        const isUpdated = await commentsService.updateById(
+        const isUpdated = await this.commentsService.updateById(
             commentId, 
             { content: req.body.content}
         )
@@ -49,20 +64,20 @@ class CommentsController {
 
 const commentsController = new CommentsController();
 
-commentsRouter.get('/:id', commentsController.getById)
+commentsRouter.get('/:id', commentsController.getById.bind(commentsController))
 
 commentsRouter.delete('/:id', 
-    existenceChecker.checkCommentExist,
-    authChecker.checkUserBearerAuth,
-    authChecker.checkCommentCredentials,
-    commentsController.deleteById
+    commentsController.existenceChecker.checkCommentExist.bind(commentsController.existenceChecker),
+    commentsController.authChecker.checkUserBearerAuth.bind(commentsController.authChecker),
+    commentsController.authChecker.checkCommentCredentials.bind(commentsController.authChecker),
+    commentsController.deleteById.bind(commentsController)
 )
 
 commentsRouter.put('/:id',
-    existenceChecker.checkCommentExist,
-    authChecker.checkUserBearerAuth,
-    authChecker.checkCommentCredentials,
-    inputValidators.validationCommentContent,
+    commentsController.existenceChecker.checkCommentExist.bind(commentsController.existenceChecker),
+    commentsController.authChecker.checkUserBearerAuth.bind(commentsController.authChecker),
+    commentsController.authChecker.checkCommentCredentials.bind(commentsController.authChecker),
+    commentsController.inputValidators.validationCommentContent.bind(commentsController.inputValidators),
     checkValidationErrors,
-    commentsController.updateById
+    commentsController.updateById.bind(commentsController)
 )

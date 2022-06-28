@@ -2,7 +2,7 @@ import { commentsProjection } from "../const";
 import { Comment, FilterComments } from "../types";
 import { CommentsModel } from "./models.mongoose";
 
-class CommentsRepository {
+export class CommentsRepository {
     async getCountComments(filter: FilterComments): Promise<number> {
         const count = await CommentsModel.count(filter)
 
@@ -55,5 +55,3 @@ class CommentsRepository {
         await CommentsModel.deleteMany({})
     }
 }
-
-export const commentsRepository = new CommentsRepository();

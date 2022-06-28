@@ -1,18 +1,20 @@
 import bcrypt from 'bcrypt';
-import { emailManager } from '../magangers/email-manager';
-import { usersRepository } from '../repository/users-repository';
+import { EmailManager } from '../magangers/email-manager';
 import { CreateUserFields } from '../types';
-import { usersService } from './users.service';
+import { UsersService } from './users.service';
 
-class AuthService {
-    async generateHash(password: string) {
-        const hash = await bcrypt.hash(password, 10)
+export class AuthService {
+    usersService: UsersService
 
-        return hash;
+    emailManager: EmailManager
+
+    constructor() {
+        this.usersService = new UsersService();
+        this.emailManager = new EmailManager();
     }
 
     async getUserByCredentials(login: string, password: string) {
-        const user = await usersRepository.findUserByLogin(login)
+        const user = await this.usersService.getUserByLogin(login)
 
         if (!user) return null;
 
@@ -22,46 +24,44 @@ class AuthService {
     }
 
     async registration(createUserFields: CreateUserFields): Promise<boolean> {
-        const createdUser = await usersService.makeRegisteredUser(createUserFields)
+        const createdUser = await this.usersService.makeRegisteredUser(createUserFields)
 
         if (!createdUser) return false;
 
-        const user = await usersRepository.findUserByUserId(createdUser.id)
+        const user = await this.usersService.getUserById(createdUser.id)
 
         if (!user) return false;
 
-        const isSended = await emailManager.sendRegistrationCode(user)
+        const isSended = await this.emailManager.sendRegistrationCode(user)
 
         return isSended;
     }
 
     async registrationConfirmation(code: string) {
-        const user = await usersRepository.findUserByConfirmationCode(code)
+        const user = await this.usersService.getUserByConfirmationCode(code)
 
         if (!user) return false;
 
-        const savedIsConfirmed = await usersRepository.registrationConfirmed(user.id)
+        const savedIsConfirmed = await this.usersService.registrationConfirmed(user.id)
 
         return savedIsConfirmed;
     }
 
     async registrationEmailResending(email: string) {
-        const user = await usersRepository.findUserByEmail(email)
+        const user = await this.usersService.getUserByEmail(email)
 
         if (!user) return false;
 
-        const isUpdatedConfirmationCode = usersService.updateConfirmationCode(user);
+        const isUpdatedConfirmationCode = this.usersService.updateConfirmationCode(user);
 
         if (!isUpdatedConfirmationCode) return false;
 
-        const updatedUser = await usersRepository.findUserByUserId(user.id)
+        const updatedUser = await this.usersService.getUserById(user.id)
 
         if (!updatedUser) return false;
 
-        const isSended = await emailManager.sendRegistrationCode(updatedUser)
+        const isSended = await this.emailManager.sendRegistrationCode(updatedUser)
 
         return isSended;
     }
 }
-
-export const authService = new AuthService();

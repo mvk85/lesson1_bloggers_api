@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 const emailAddress = process.env.emailAddressApp;
 const emailPassword = process.env.emailPasswordApp;
 
-export const emailAtapter = {
+export class EmailAtapter {
     async sendEmail(
         email: string, 
         subject: string, 

@@ -2,7 +2,7 @@ import { removeObjectIdOption } from "../const";
 import { Blogger, FilterBloggers } from "../types";
 import { BloggersModel } from "./models.mongoose";
 
-class BloggersRepository {
+export class BloggersRepository {
     async getBloggers(
         filter: FilterBloggers, 
         skip: number,
@@ -60,5 +60,3 @@ class BloggersRepository {
         await BloggersModel.deleteMany({})
     }
 }
-
-export const bloggersRepository = new BloggersRepository();

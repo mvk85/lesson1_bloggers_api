@@ -1,12 +1,21 @@
 import { body } from "express-validator";
-import { bloggersRepository } from "../repository/bloggers-repository";
-import { usersRepository } from "../repository/users-repository";
+import { BloggersRepository } from "../repository/bloggers-repository";
+import { UsersRepository } from "../repository/users-repository";
 
 const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
 const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
 
-class InputValidators {
+export class InputValidators {
+    bloggersRepository: BloggersRepository
+
+    usersRepository: UsersRepository
+
+    constructor() {
+        this.bloggersRepository = new BloggersRepository()
+        this.usersRepository = new UsersRepository()
+    }
+
     validationBloggerName = body('name')
         .trim()
         .isLength({ min: 1, max: 15 })
@@ -39,7 +48,7 @@ class InputValidators {
         .isLength({ min: 1, max: 100 })
         .withMessage('bloggerId lenght should be between 1 and 100')
         .custom(async (value) => {
-            const blogger = await bloggersRepository.getBloggerById(String(value));
+            const blogger = await this.bloggersRepository.getBloggerById(String(value));
 
             if (!blogger) {
                 return Promise.reject()
@@ -59,7 +68,7 @@ class InputValidators {
 
     validationExistUserLogin = body('login')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByLogin(String(value))
+            const user = await this.usersRepository.findUserByLogin(String(value))
 
             return user ? Promise.reject() : Promise.resolve();
         })
@@ -77,7 +86,7 @@ class InputValidators {
 
     validationExistUserEmail = body('email')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByEmail(String(value))
+            const user = await this.usersRepository.findUserByEmail(String(value))
 
             return user ? Promise.reject() : Promise.resolve();
         })
@@ -99,7 +108,7 @@ class InputValidators {
 
     validationConfirmedCode = body('code')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByConfirmationCode(String(value))
+            const user = await this.usersRepository.findUserByConfirmationCode(String(value))
 
             return user?.isConfirmed ? Promise.reject() : Promise.resolve();
         })
@@ -107,7 +116,7 @@ class InputValidators {
 
     validationExistConfirmationCode = body('code')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByConfirmationCode(String(value))
+            const user = await this.usersRepository.findUserByConfirmationCode(String(value))
 
             return user ? Promise.resolve() : Promise.reject();
         })
@@ -115,7 +124,7 @@ class InputValidators {
 
     validationConfirmedCodeByEmail = body('email')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByEmail(String(value))
+            const user = await this.usersRepository.findUserByEmail(String(value))
 
             return user?.isConfirmed ? Promise.reject() : Promise.resolve();
         })
@@ -123,11 +132,9 @@ class InputValidators {
 
     validationExistEmail = body('email')
         .custom(async (value) => {
-            const user = await usersRepository.findUserByEmail(String(value))
+            const user = await this.usersRepository.findUserByEmail(String(value))
 
             return user ? Promise.resolve() : Promise.reject();
         })
         .withMessage('email should exist')
 }
-
-export const inputValidators = new InputValidators();

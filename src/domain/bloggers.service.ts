@@ -1,10 +1,19 @@
 import { ObjectId } from "mongodb";
-import { bloggersRepository } from "../repository/bloggers-repository";
-import { postsRepository } from "../repository/posts-repository";
+import { BloggersRepository } from "../repository/bloggers-repository";
+import { PostsRepository } from "../repository/posts-repository";
 import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
 import { generateCustomId, generatePaginationData } from "../utils";
 
-class BloggersService {
+export class BloggersService {
+    bloggersRepository: BloggersRepository
+
+    postsRepository: PostsRepository
+
+    constructor() {
+        this.bloggersRepository = new BloggersRepository();
+        this.postsRepository = new PostsRepository();
+    }
+
     async getBloggers(
         filterParams: FilterBloggersParams = {},
         paginationParams: PaginationParams
@@ -13,10 +22,10 @@ class BloggersService {
             ? { name: { $regex: filterParams.SearchNameTerm } }
             : {};
 
-        const bloggersCount = await bloggersRepository.getCountBloggers(filter);
+        const bloggersCount = await this.bloggersRepository.getCountBloggers(filter);
         const paginationData = generatePaginationData(paginationParams, bloggersCount)
 
-        const bloggers = await bloggersRepository.getBloggers(
+        const bloggers = await this.bloggersRepository.getBloggers(
             filter, paginationData.skip, paginationData.pageSize
         );
 
@@ -34,10 +43,10 @@ class BloggersService {
         paginationParams: PaginationParams
     ): Promise<ResponsePostsByBloggerId> {
         const filter = { bloggerId };
-        const postsCount = await postsRepository.getCountPosts(filter);
+        const postsCount = await this.postsRepository.getCountPosts(filter);
         const paginationData = generatePaginationData(paginationParams, postsCount)
 
-        const posts = await postsRepository.getPosts(
+        const posts = await this.postsRepository.getPosts(
             filter, paginationData.skip, paginationData.pageSize
         );
 
@@ -51,7 +60,7 @@ class BloggersService {
     }
 
     async getBloggerById(id: string): Promise<Blogger | null> {
-        const blogger = await bloggersRepository.getBloggerById(id)
+        const blogger = await this.bloggersRepository.getBloggerById(id)
 
         return blogger
     }
@@ -64,22 +73,21 @@ class BloggersService {
             youtubeUrl
         )
 
-        const createdBlogger = await bloggersRepository.createBlogger(newBloggers)
+        const createdBlogger = await this.bloggersRepository.createBlogger(newBloggers)
 
         return createdBlogger;
     }
 
     async deleteBloggerById(id: string) {
-        const isDeleted = await bloggersRepository.deleteBloggerById(id);
+        const isDeleted = await this.bloggersRepository.deleteBloggerById(id);
 
         return isDeleted;
     }
 
     async updateBloggerById(id: string, data: { name: string, youtubeUrl: string }) {
-        const isUpdated = await bloggersRepository.updateBloggerById(id, data);
+        const isUpdated = await this.bloggersRepository.updateBloggerById(id, data);
 
         return isUpdated;
     }
 }
 
-export const bloggersService = new BloggersService();

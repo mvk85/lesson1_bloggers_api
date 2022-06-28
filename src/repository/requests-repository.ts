@@ -5,7 +5,7 @@ import { RequestsModel } from "./models.mongoose";
 
 const REQUEST_CHECKING_DURING = -10;
 
-class RequestsRepository {
+export class RequestsRepository {
     async getRequestsCountWithDuration(ip: string, endpoint: string) {
         const endDate = newDateInMilliseconds()
         const startDate = addSeconds(endDate, REQUEST_CHECKING_DURING).getTime();
@@ -37,5 +37,3 @@ class RequestsRepository {
         await RequestsModel.deleteMany({})
     }
 }
-
-export const requestsRepository = new RequestsRepository();
