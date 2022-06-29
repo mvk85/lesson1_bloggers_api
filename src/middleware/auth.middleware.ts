@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { injectable } from "inversify";
 import { CommentsService } from "../domain/comments.service";
 import { UsersRepository } from "../repository/users-repository";
 import { jwtUtility } from "../utils";
@@ -6,15 +7,12 @@ import { jwtUtility } from "../utils";
 const logopass = 'admin:qwerty';
 const logopassBase64 = Buffer.from(logopass).toString('base64')
 
+@injectable()
 export class AuthChecker {
-    usersRepository: UsersRepository
-
-    commentsService: CommentsService
-
-    constructor() {
-        this.usersRepository = new UsersRepository();
-        this.commentsService = new CommentsService();
-    }
+    constructor(
+        protected usersRepository: UsersRepository,
+        protected commentsService: CommentsService,
+    ) {}
 
     checkAdminBasicAuth (req: Request, res: Response, next: NextFunction) {
         const headers = req.headers;

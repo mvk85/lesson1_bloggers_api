@@ -1,8 +1,10 @@
+import { injectable } from 'inversify';
 import nodemailer from 'nodemailer';
 
 const emailAddress = process.env.emailAddressApp;
 const emailPassword = process.env.emailPasswordApp;
 
+@injectable()
 export class EmailAtapter {
     async sendEmail(
         email: string, 

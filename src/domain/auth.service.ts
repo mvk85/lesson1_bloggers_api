@@ -1,17 +1,15 @@
 import bcrypt from 'bcrypt';
+import { injectable } from 'inversify';
 import { EmailManager } from '../magangers/email-manager';
 import { CreateUserFields } from '../types';
 import { UsersService } from './users.service';
 
+@injectable()
 export class AuthService {
-    usersService: UsersService
-
-    emailManager: EmailManager
-
-    constructor() {
-        this.usersService = new UsersService();
-        this.emailManager = new EmailManager();
-    }
+    constructor(
+        protected usersService: UsersService,
+        protected emailManager: EmailManager
+    ) {}
 
     async getUserByCredentials(login: string, password: string) {
         const user = await this.usersService.getUserByLogin(login)

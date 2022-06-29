@@ -1,11 +1,9 @@
+import { injectable } from "inversify";
 import { CommentsRepository } from "../repository/comments-repository"
 
+@injectable()
 export class CommentsService {
-    commentsRepository: CommentsRepository
-
-    constructor() {
-        this.commentsRepository = new CommentsRepository();
-    }
+    constructor(protected commentsRepository: CommentsRepository) {}
     
     async deleteById(id: string) {
         const isDeleted = await this.commentsRepository.deleteCommentById(id);

@@ -1,12 +1,12 @@
+import { injectable } from "inversify";
 import { EmailAtapter } from "../adapters/email-adapter";
 import { User } from "../types";
 
+@injectable()
 export class EmailManager {
-    emailAtapter: EmailAtapter
-
-    constructor() {
-        this.emailAtapter = new EmailAtapter();
-    }
+    constructor(
+        protected emailAtapter: EmailAtapter
+    ) {}
 
     async sendRegistrationCode(user: User): Promise<boolean> {
         try {

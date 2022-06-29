@@ -1,27 +1,19 @@
+import { injectable } from "inversify";
 import { BloggersRepository } from "../repository/bloggers-repository"
 import { CommentsRepository } from "../repository/comments-repository";
 import { PostsRepository } from "../repository/posts-repository";
 import { RequestsRepository } from "../repository/requests-repository";
 import { UsersRepository } from "../repository/users-repository";
 
+@injectable()
 export class TestingService {
-    bloggersRepository: BloggersRepository
-
-    commentsRepository: CommentsRepository
-
-    postsRepository: PostsRepository
-
-    requestsRepository: RequestsRepository
-
-    usersRepository: UsersRepository
-
-    constructor() {
-        this.bloggersRepository = new BloggersRepository();    
-        this.commentsRepository = new CommentsRepository();
-        this.postsRepository = new PostsRepository();
-        this.requestsRepository = new RequestsRepository();
-        this.usersRepository = new UsersRepository();
-    }
+    constructor(
+        protected bloggersRepository: BloggersRepository,
+        protected commentsRepository: CommentsRepository,
+        protected postsRepository: PostsRepository,
+        protected requestsRepository: RequestsRepository,
+        protected usersRepository: UsersRepository
+    ) {}
 
     async deleteAllData() {
         await this.bloggersRepository.deleteAllBloggers();

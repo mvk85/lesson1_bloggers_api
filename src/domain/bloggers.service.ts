@@ -1,18 +1,16 @@
+import { injectable } from "inversify";
 import { ObjectId } from "mongodb";
 import { BloggersRepository } from "../repository/bloggers-repository";
 import { PostsRepository } from "../repository/posts-repository";
 import { Blogger, FilterBloggersParams, PaginationParams, ResponseBloggers, ResponsePostsByBloggerId } from "../types";
 import { generateCustomId, generatePaginationData } from "../utils";
 
+@injectable()
 export class BloggersService {
-    bloggersRepository: BloggersRepository
-
-    postsRepository: PostsRepository
-
-    constructor() {
-        this.bloggersRepository = new BloggersRepository();
-        this.postsRepository = new PostsRepository();
-    }
+    constructor(
+        protected bloggersRepository: BloggersRepository,
+        protected postsRepository: PostsRepository,
+    ) {}
 
     async getBloggers(
         filterParams: FilterBloggersParams = {},

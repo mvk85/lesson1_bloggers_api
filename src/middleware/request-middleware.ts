@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import { injectable } from "inversify";
 import { RequestsService } from "../domain/requests.service";
 import { BruteForceItem } from "../types";
 import { newDateInMilliseconds } from "../utils";
 
+@injectable()
 export class IpChecker {
-    requestsService: RequestsService
-
-    constructor() {
-        this.requestsService = new RequestsService()
-    }
+    constructor(
+        protected requestsService: RequestsService
+    ) {}
 
     async checkBruteForceByIp(req: Request, res: Response, next: NextFunction) {
         const ip = req.ip;

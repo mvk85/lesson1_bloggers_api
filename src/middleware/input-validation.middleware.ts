@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { injectable } from "inversify";
 import { BloggersRepository } from "../repository/bloggers-repository";
 import { UsersRepository } from "../repository/users-repository";
 
@@ -6,15 +7,12 @@ const regexUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)
 
 const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
 
+@injectable()
 export class InputValidators {
-    bloggersRepository: BloggersRepository
-
-    usersRepository: UsersRepository
-
-    constructor() {
-        this.bloggersRepository = new BloggersRepository()
-        this.usersRepository = new UsersRepository()
-    }
+    constructor(
+        protected bloggersRepository: BloggersRepository,
+        protected usersRepository: UsersRepository
+    ) {}
 
     validationBloggerName = body('name')
         .trim()

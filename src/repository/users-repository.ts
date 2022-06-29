@@ -1,10 +1,16 @@
+import { inject, injectable } from "inversify";
 import { projectionUserItem } from "../const";
 import { CreatedUserType, User } from "../types";
 import { UsersModel } from "./models.mongoose";
 
+@injectable()
 export class UsersRepository {
+    constructor(
+        @inject(UsersModel) private usersModel: typeof UsersModel
+    ) {}
+
     async getUsers(skip: number, limit: number): Promise<User[]> {
-        const users = await UsersModel
+        const users = await this.usersModel
             .find({})
             .select(projectionUserItem)
             .skip(skip)
@@ -15,55 +21,55 @@ export class UsersRepository {
     }
 
     async getCountUsers(): Promise<number> {
-        const count = await UsersModel.count({})
+        const count = await this.usersModel.count({})
 
         return count;
     }
 
     async createUser(newUser: User): Promise<CreatedUserType | null> {
-        await UsersModel.create(newUser);
+        await this.usersModel.create(newUser);
 
-        const user = await UsersModel.findOne({ id: newUser.id }).select(projectionUserItem)
+        const user = await this.usersModel.findOne({ id: newUser.id }).select(projectionUserItem)
 
         return user;
     }
 
     async deleteUserByid(id: string): Promise<boolean> {
-        const result = await UsersModel.deleteOne({ id })
+        const result = await this.usersModel.deleteOne({ id })
 
         return result.deletedCount === 1;
     }
 
     async findUserByLogin(login: string): Promise<User | null> {
-        const user = await UsersModel.findOne({ login })
+        const user = await this.usersModel.findOne({ login })
 
         return user;
     }
 
     async findUserByEmail(email: string): Promise<User | null> {
-        const user = await UsersModel.findOne({ email })
+        const user = await this.usersModel.findOne({ email })
 
         return user;
     }
 
     async findUserByUserId(id: string): Promise<User | null> {
-        const user = await UsersModel.findOne({ id })
+        const user = await this.usersModel.findOne({ id })
 
         return user;
     }
 
     async findUserByConfirmationCode(code: string): Promise<User | null> {
-        const user = await UsersModel.findOne({ confirmCode: code })
+        const user = await this.usersModel.findOne({ confirmCode: code })
 
         return user;
     }
 
     async deleteAllUsers() {
-        await UsersModel.deleteMany({})
+        await this.usersModel.deleteMany({})
     }
 
     async registrationConfirmed(id: string): Promise<boolean> {
-        const resultUpdating = await UsersModel.updateOne(
+        const resultUpdating = await this.usersModel.updateOne(
             { id },
             { $set: { isConfirmed: true } }
         )
@@ -72,7 +78,7 @@ export class UsersRepository {
     }
 
     async updateConfirmationCode(id: string, code: string) {
-        const resultUpdating = await UsersModel.updateOne(
+        const resultUpdating = await this.usersModel.updateOne(
             { id },
             { $set: { confirmCode: code } }
         )

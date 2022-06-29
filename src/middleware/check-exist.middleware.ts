@@ -1,16 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import { injectable } from "inversify";
 import { CommentsService } from "../domain/comments.service";
 import { PostsService } from "../domain/posts.service";
 
+@injectable()
 export class ExistenceChecker {
-    commentsService: CommentsService
-    
-    postsService: PostsService
-
-    constructor() {
-        this.commentsService = new CommentsService()
-        this.postsService = new PostsService()
-    }
+    constructor(
+        protected commentsService: CommentsService,   
+        protected postsService: PostsService
+    ) {}
 
     async checkPostExist(req: Request, res: Response, next: NextFunction) {
         const postId = req.params.id;

@@ -1,15 +1,15 @@
+import { injectable } from "inversify";
 import { RequestsRepository } from "../repository/requests-repository";
 import { BruteForceItem } from "../types";
 
 const CURRENT_REQUEST = 1;
 const MAX_REQUESTS_IN_DURATION = 5;
 
+@injectable()
 export class RequestsService {
-    requestsRepository: RequestsRepository
-
-    constructor() {
-        this.requestsRepository = new RequestsRepository();
-    }
+    constructor(
+        protected requestsRepository: RequestsRepository
+    ) {}
 
     async saveRequest(item: BruteForceItem) {
         await this.requestsRepository.writeRequest(item);

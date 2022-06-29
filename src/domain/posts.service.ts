@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { ObjectId } from "mongodb";
 import { BloggersRepository } from "../repository/bloggers-repository";
 import { CommentsRepository } from "../repository/comments-repository";
@@ -5,18 +6,13 @@ import { PostsRepository } from "../repository/posts-repository";
 import { Comment, PaginationParams, Post, PostCreateFields, ResponseCommentsByPostId, ResponsePosts } from "../types";
 import { generateCustomId, generatePaginationData, newIsoDate } from "../utils";
 
+@injectable()
 export class PostsService {
-    bloggersRepository: BloggersRepository
-    
-    commentsRepository: CommentsRepository
-
-    postsRepository: PostsRepository
-
-    constructor() {
-        this.bloggersRepository = new BloggersRepository();
-        this.commentsRepository = new CommentsRepository();
-        this.postsRepository = new PostsRepository();
-    }
+    constructor(
+        protected bloggersRepository: BloggersRepository,    
+        protected commentsRepository: CommentsRepository,
+        protected postsRepository: PostsRepository
+    ) {}
 
     async getPosts(paginationParams: PaginationParams): Promise<ResponsePosts> {
         const postsCount = await this.postsRepository.getCountPosts();

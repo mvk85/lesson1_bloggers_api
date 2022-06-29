@@ -1,79 +1,11 @@
-import { Request, Response, Router } from "express";
-import { AuthService } from "../domain/auth.service";
+import { Router } from "express";
+import { container } from "../composition-root";
 import { checkValidationErrors } from "../middleware/check-errors.middleware";
-import { InputValidators } from "../middleware/input-validation.middleware";
-import { IpChecker } from "../middleware/request-middleware";
-import { jwtUtility } from "../utils";
+import { AuthController } from "./AuthController";
 
 export const authRouter = Router();
 
-class AuthController {
-    authService: AuthService
-
-    inputValidators: InputValidators
-
-    ipChecker: IpChecker
-
-    constructor() {
-        this.authService = new AuthService();
-        this.inputValidators = new InputValidators();
-        this.ipChecker = new IpChecker();
-    }
-
-    async login (req: Request, res: Response) {
-        const user = await this.authService.getUserByCredentials(req.body.login, req.body.password)
-
-        if (!user) {
-            res.sendStatus(401)
-
-            return;
-        }
-
-        const token = jwtUtility.createJWT(user)
-
-        res.send({ token })
-    }
-
-    async registration (req: Request, res: Response) {
-        const isRegistrated = await this.authService.registration({
-            login: req.body.login,
-            email: req.body.email,
-            password: req.body.password
-        })
-
-        if (isRegistrated) {
-            res.sendStatus(204)
-        } else {
-            res.sendStatus(400)
-        }
-    }
-
-    async registrationConfirmation (req: Request, res: Response) {
-        const confirmationCode = req.body.code;
-
-        const isConfirmed = await this.authService.registrationConfirmation(confirmationCode)
-
-        if (isConfirmed) {
-            res.sendStatus(204)
-        } else {
-            res.sendStatus(400)
-        }
-    }
-
-    async registrationEmailResending (req: Request, res: Response) {
-        const email = req.body.email
-
-        const isSendedNewCode = await this.authService.registrationEmailResending(email)
-
-        if (isSendedNewCode) {
-            res.sendStatus(204)
-        } else {
-            res.sendStatus(400)
-        }
-    }
-}
-
-const authController = new AuthController();
+const authController = container.get(AuthController)
 
 authRouter.post('/login',
     authController.ipChecker.checkBruteForceByIp.bind(authController.ipChecker),

@@ -1,15 +1,14 @@
+import { injectable } from "inversify";
 import { ObjectId } from "mongodb";
 import { UsersRepository } from "../repository/users-repository";
 import { PaginationParams, ResponseUsers, User, CreateUserFields } from "../types";
 import { generateConfirmCode, generateCustomId, generateHash, generatePaginationData } from "../utils";
-import { AuthService } from "./auth.service";
 
+@injectable()
 export class UsersService {
-    usersRepository: UsersRepository
-
-    constructor() {
-        this.usersRepository = new UsersRepository();
-    }
+    constructor(
+        protected usersRepository: UsersRepository
+    ) {}
 
     async getUsers(paginationParams: PaginationParams): Promise<ResponseUsers> {
         const usersCount = await this.usersRepository.getCountUsers();
