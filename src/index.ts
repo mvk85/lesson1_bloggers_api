@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express"
+import express from "express"
 import bodyParser from "body-parser"
 import cors from "cors"
 import { bloggersRouter } from "./routers/bloggers-router"
@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000
 app.use(cors())
 app.use(bodyParser.json())
 
-// to block by ip
+// the helper that is needed to block at the ip on the heroku
 app.set('trust proxy', true);
 
 app.use('/bloggers', bloggersRouter);
