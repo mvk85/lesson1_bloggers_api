@@ -8,7 +8,7 @@ export class Blogger {
         public id: IdType,
         public name: string,
         public youtubeUrl: string,
-    ) {}
+    ) { }
 }
 
 export type ErrorMessage = {
@@ -30,23 +30,23 @@ export class Post {
         public content: string,
         public bloggerId: string,
         public bloggerName: string,
-    ) {}   
+    ) { }
 }
 
 export class User {
     constructor(
         public _id: ObjectId,
-        public id:	IdType,
+        public id: IdType,
         public login: string,
         public passwordHash: string,
         public email: string,
         public isConfirmed: boolean,
         public confirmCode?: string | null,
-    ){}
+    ) { }
 }
 
 export type CreatedUserType = {
-    id:	IdType;
+    id: IdType;
     login: string;
     email: string;
 }
@@ -60,7 +60,7 @@ export class Comment {
         public userLogin: string,
         public addedAt: string,
         public postId: string,
-    ) {}   
+    ) { }
 }
 
 export type ResponseCommentType = Omit<Comment, 'postId'>
@@ -145,5 +145,24 @@ export class BruteForceItem {
         public ip: string,
         public endpoint: string,
         public date: number,
+    ) { }
+}
+
+export class BadRefreshTokenEntityType {
+    constructor(
+        public userId: string,
+        public tokens: string[]
+    ) { }
+}
+
+export class MeItem {
+    constructor(
+        public email: string,
+        public login: string,
+        public userId: string,
     ) {}
+}
+
+export enum IoCConstantsKey {
+    isProduction = 'isProduction'
 }

@@ -1,14 +1,18 @@
 import bcrypt from 'bcrypt';
 import { injectable } from 'inversify';
+import { JwtUtility } from '../heplers/JwtUtility';
 import { EmailManager } from '../magangers/email-manager';
-import { CreateUserFields } from '../types';
+import { AuthRepository } from '../repository/auth-repository';
+import { CreateUserFields, MeItem, User } from '../types';
 import { UsersService } from './users.service';
 
 @injectable()
 export class AuthService {
     constructor(
         protected usersService: UsersService,
-        protected emailManager: EmailManager
+        protected emailManager: EmailManager,
+        public jwtUtility: JwtUtility,
+        protected authRepository: AuthRepository
     ) {}
 
     async getUserByCredentials(login: string, password: string) {
@@ -61,5 +65,46 @@ export class AuthService {
         const isSended = await this.emailManager.sendRegistrationCode(updatedUser)
 
         return isSended;
+    }
+
+    createTokensByUserId(userId: string) {
+        return this.jwtUtility.createJWTTokens(userId)
+    }
+
+    createTokensByRefreshToken(refreshToken: string) {
+        const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
+
+        return this.jwtUtility.createJWTTokens(userId)
+    }
+
+    async canRefreshedTokens(refreshToken: string) {
+        const isValidRefreshToken = this.jwtUtility.checkRefreshToken(refreshToken)
+
+        if (!isValidRefreshToken) {
+            return false;
+        }
+        
+        const isBadRefreshToken = await this.authRepository.isBadRefreshToken(refreshToken);
+
+        return !isBadRefreshToken;     
+    }
+
+    async addTokenToBlackList(refreshToken: string) {
+        const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
+        const result = await this.authRepository.addToBadRefreshTokens(userId, refreshToken)
+
+        return !!result;   
+    }
+
+    async me(refreshToken: string): Promise<MeItem | null> {
+        const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
+
+        const user = await this.usersService.getUserById(userId)
+
+        if (!user) return null;
+
+        const meItem = new MeItem(user.email, user.login, user.id)
+
+        return meItem;
     }
 }

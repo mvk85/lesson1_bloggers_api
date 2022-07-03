@@ -43,3 +43,18 @@ authRouter.post('/registration-email-resending',
     checkValidationErrors,
     authController.registrationEmailResending.bind(authController)
 )
+
+authRouter.post('/refresh-token', 
+    authController.refreshTokenValidator.validateRefreshToken.bind(authController.refreshTokenValidator),
+    authController.refreshToken.bind(authController)
+)
+
+authRouter.post('/logout', 
+    authController.refreshTokenValidator.validateRefreshToken.bind(authController.refreshTokenValidator),
+    authController.logout.bind(authController)
+)
+
+authRouter.post('/me', 
+    authController.authChecker.checkUserBearerAuth.bind(authController.authChecker),
+    authController.me.bind(authController)
+)

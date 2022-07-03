@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { injectable } from "inversify";
 import { CommentsService } from "../domain/comments.service";
+import { JwtUtility } from "../heplers/JwtUtility";
 import { UsersRepository } from "../repository/users-repository";
-import { jwtUtility } from "../utils";
 
 const logopass = 'admin:qwerty';
 const logopassBase64 = Buffer.from(logopass).toString('base64')
@@ -12,6 +12,7 @@ export class AuthChecker {
     constructor(
         protected usersRepository: UsersRepository,
         protected commentsService: CommentsService,
+        public jwtUtility: JwtUtility,
     ) {}
 
     checkAdminBasicAuth (req: Request, res: Response, next: NextFunction) {
@@ -35,7 +36,7 @@ export class AuthChecker {
     
         const token = req.headers.authorization.split(' ')[1]
     
-        const userId = await jwtUtility.getUserIdByToken(token);
+        const userId = await this.jwtUtility.getUserIdByToken(token);
     
         if (!userId) {
             res.sendStatus(401)

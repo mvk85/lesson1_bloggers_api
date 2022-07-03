@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { AuthRepository } from "../repository/auth-repository";
 import { BloggersRepository } from "../repository/bloggers-repository"
 import { CommentsRepository } from "../repository/comments-repository";
 import { PostsRepository } from "../repository/posts-repository";
@@ -12,7 +13,8 @@ export class TestingService {
         protected commentsRepository: CommentsRepository,
         protected postsRepository: PostsRepository,
         protected requestsRepository: RequestsRepository,
-        protected usersRepository: UsersRepository
+        protected usersRepository: UsersRepository,
+        protected authRepository: AuthRepository
     ) {}
 
     async deleteAllData() {
@@ -21,6 +23,7 @@ export class TestingService {
         await this.postsRepository.deleteAllPosts();
         await this.usersRepository.deleteAllUsers();
         await this.requestsRepository.deleteAll();
+        await this.authRepository.clearBlackListRefreshTokens();
     }
 }
 

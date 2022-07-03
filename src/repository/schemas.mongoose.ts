@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Blogger, BruteForceItem, Comment, Post, User } from "../types";
+import { Blogger, BruteForceItem, Comment, Post, BadRefreshTokenEntityType, User } from "../types";
 
 export const bloggersSchema = new mongoose.Schema<Blogger>({
     id: { type: String, required: true },
@@ -38,4 +38,9 @@ export const requestsSchema = new mongoose.Schema<BruteForceItem>({
     ip: { type: String, required: true },
     date: { type: Number, required: true },
     endpoint: { type: String, required: true },
+})
+
+export const badRefreshTokensSchema = new mongoose.Schema<BadRefreshTokenEntityType>({
+    userId: { type: String, required: true },
+    tokens: { type: [String], default: [] }
 })

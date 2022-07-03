@@ -25,12 +25,17 @@ import { BloggerValidator } from './middleware/blogger-id-validation';
 import { ExistenceChecker } from './middleware/check-exist.middleware';
 import { InputValidators } from './middleware/input-validation.middleware';
 import { IpChecker } from './middleware/request-middleware';
-import { BloggersModel, CommentsModel, PostsModel, RequestsModel, UsersModel } from './repository/models.mongoose';
+import { BloggersModel, CommentsModel, PostsModel, BadRefreshTokensModel, RequestsModel, UsersModel } from './repository/models.mongoose';
+import { JwtUtility } from './heplers/JwtUtility';
+import { AuthRepository } from './repository/auth-repository';
+import { RefreshTokenValidator } from './middleware/check-refresh-token.middleware';
+import { IoCConstantsKey } from './types';
 
 export const container = new Container()
 
 container.bind(AuthController).to(AuthController)
 container.bind(AuthService).to(AuthService)
+container.bind(AuthRepository).to(AuthRepository)
 
 container.bind(BloggersController).to(BloggersController)
 container.bind(BloggersService).to(BloggersService)
@@ -68,9 +73,20 @@ container.bind(InputValidators).to(InputValidators)
 
 container.bind(IpChecker).to(IpChecker)
 
+container.bind(JwtUtility).to(JwtUtility)
+
+container.bind(RefreshTokenValidator).to(RefreshTokenValidator)
+
 // models
 container.bind(BloggersModel).toConstantValue(BloggersModel)
 container.bind(UsersModel).toConstantValue(UsersModel)
 container.bind(PostsModel).toConstantValue(PostsModel)
 container.bind(CommentsModel).toConstantValue(CommentsModel)
 container.bind(RequestsModel).toConstantValue(RequestsModel)
+container.bind(BadRefreshTokensModel).toConstantValue(BadRefreshTokensModel)
+
+// constants
+
+const isProduction = process.env.NODE_ENV === 'Production';
+
+container.bind(IoCConstantsKey.isProduction).toConstantValue(isProduction)
