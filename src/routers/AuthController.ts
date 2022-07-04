@@ -102,9 +102,16 @@ export class AuthController {
     }
 
     async me(req: Request, res: Response) {
-        const refreshToken = req.cookies.refreshToken;
+        // const refreshToken = req.cookies.refreshToken;
+        const userId = req.user?.userId
 
-        const meData = await this.authService.me(refreshToken)
+        if (!userId) {
+            res.sendStatus(401)
+
+            return;
+        }
+
+        const meData = await this.authService.me(userId)
 
         if (!meData) {
             res.sendStatus(400)

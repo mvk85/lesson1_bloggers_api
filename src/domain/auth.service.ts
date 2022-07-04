@@ -96,8 +96,8 @@ export class AuthService {
         return !!result;   
     }
 
-    async me(refreshToken: string): Promise<MeItem | null> {
-        const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
+    async me(userId: string): Promise<MeItem | null> {
+        // const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
 
         const user = await this.usersService.getUserById(userId)
 
