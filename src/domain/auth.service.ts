@@ -101,6 +101,9 @@ export class AuthService {
 
         const user = await this.usersService.getUserById(userId)
 
+        console.log('--- userId = ', userId)
+        console.log('--- user = ', JSON.stringify(user))
+
         if (!user) return null;
 
         const meItem = new MeItem(user.email, user.login, user.id)
