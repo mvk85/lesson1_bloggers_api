@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { projectionUserItem } from "../const";
+import { projectionCreateUserItem, projectionUserItem } from "../const";
 import { CreatedUserType, User } from "../types";
 import { UsersModel } from "./models.mongoose";
 
@@ -29,11 +29,19 @@ export class UsersRepository {
     async createUser(newUser: User): Promise<CreatedUserType | null> {
         await this.usersModel.create(newUser);
 
+        const user = await this.usersModel.findOne({ id: newUser.id }).select(projectionCreateUserItem)
+
+        return user;
+    }
+    
+    async makeUser(newUser: User): Promise<CreatedUserType | null> {
+        await this.usersModel.create(newUser);
+
         const user = await this.usersModel.findOne({ id: newUser.id }).select(projectionUserItem)
 
         return user;
     }
-
+    
     async deleteUserByid(id: string): Promise<boolean> {
         const result = await this.usersModel.deleteOne({ id })
 

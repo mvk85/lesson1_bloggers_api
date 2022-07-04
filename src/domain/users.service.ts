@@ -73,7 +73,7 @@ export class UsersService {
             generateConfirmCode()
         )
 
-        const createdUser = await this.usersRepository.createUser(newUser);
+        const createdUser = await this.usersRepository.makeUser(newUser);
 
         return createdUser;
     }

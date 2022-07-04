@@ -77,7 +77,7 @@ export class AuthService {
         return this.jwtUtility.createJWTTokens(userId)
     }
 
-    async canRefreshedTokens(refreshToken: string) {
+    async canRefreshedTokens(refreshToken: string): Promise<boolean> {
         const isValidRefreshToken = this.jwtUtility.checkRefreshToken(refreshToken)
 
         if (!isValidRefreshToken) {
