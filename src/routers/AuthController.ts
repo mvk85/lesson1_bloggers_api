@@ -82,9 +82,13 @@ export class AuthController {
     async refreshToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken;
 
+        console.log('---- refreshToken, old refreshToken = ', refreshToken)
+
         await this.authService.addTokenToBlackList(refreshToken)
 
         const tokens = this.authService.createTokensByRefreshToken(refreshToken);
+
+        console.log('---- refreshToken, new tokens = ', tokens)
         
         this.addRefreshTokenToCookie(res, tokens.refresh)
 
