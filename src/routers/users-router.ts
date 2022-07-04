@@ -14,6 +14,8 @@ usersRouter.post("/",
     usersController.inputValidators.validationUserLogin.bind(usersController.inputValidators),
     usersController.inputValidators.validationUserPassword.bind(usersController.inputValidators),
     usersController.inputValidators.validationUserEmail.bind(usersController.inputValidators),
+    usersController.inputValidators.validationExistUserLogin.bind(usersController.inputValidators),
+    usersController.inputValidators.validationExistUserEmail.bind(usersController.inputValidators),
     checkValidationErrors,
     usersController.createUser.bind(usersController)
 )
