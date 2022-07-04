@@ -54,7 +54,7 @@ authRouter.post('/logout',
     authController.logout.bind(authController)
 )
 
-authRouter.post('/me', 
+authRouter.get('/me', 
     authController.authChecker.checkUserBearerAuth.bind(authController.authChecker),
     authController.me.bind(authController)
 )
