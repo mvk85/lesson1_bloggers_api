@@ -86,8 +86,6 @@ export class AuthController {
 
         const tokens = this.authService.createTokensByRefreshToken(refreshToken);
 
-        console.log('---- equals refreshTokens = ', refreshToken === tokens.refresh) 
-
         this.addRefreshTokenToCookie(res, tokens.refresh)
 
         res.send({ accessToken: tokens.access });
@@ -102,7 +100,6 @@ export class AuthController {
     }
 
     async me(req: Request, res: Response) {
-        // const refreshToken = req.cookies.refreshToken;
         const userId = req.user?.userId
 
         if (!userId) {

@@ -34,7 +34,7 @@ export class UsersRepository {
         return user;
     }
     
-    async makeUser(newUser: User): Promise<CreatedUserType | null> {
+    async makeRegisteredUser(newUser: User): Promise<CreatedUserType | null> {
         await this.usersModel.create(newUser);
 
         const user = await this.usersModel.findOne({ id: newUser.id }).select(projectionUserItem)

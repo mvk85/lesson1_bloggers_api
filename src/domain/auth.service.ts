@@ -30,6 +30,7 @@ export class AuthService {
 
         if (!createdUser) return false;
 
+        // this need to get confirmCode for email message
         const user = await this.usersService.getUserById(createdUser.id)
 
         if (!user) return false;
@@ -97,12 +98,7 @@ export class AuthService {
     }
 
     async me(userId: string): Promise<MeItem | null> {
-        // const userId = this.jwtUtility.getUserIdByToken(refreshToken, true)
-
         const user = await this.usersService.getUserById(userId)
-
-        console.log('--- userId = ', userId)
-        console.log('--- user = ', JSON.stringify(user))
 
         if (!user) return null;
 

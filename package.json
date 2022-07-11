@@ -11,7 +11,8 @@
     "build": "tsc",
     "start": "node -r dotenv/config dist/index.js",
     "test": "jest --config src/jest.config.ts",
-    "test-w": "jest --config src/jest.congig.ts --watch"
+    "test:debug": "jest --runInBand --config src/jest.config.ts",
+    "test:watch": "jest --config src/jest.congig.ts --watch"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

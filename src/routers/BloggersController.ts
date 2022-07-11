@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { BloggersService } from "../domain/bloggers.service";
 import { PostsService } from "../domain/posts.service";
 import { AuthChecker } from "../middleware/auth.middleware";
@@ -13,7 +13,7 @@ export class BloggersController {
         public authChecker: AuthChecker,
         protected postsService: PostsService,
         public bloggerValidator: BloggerValidator,
-        public inputValidators: InputValidators
+        @inject(InputValidators) public inputValidators: InputValidators
     ) { }
 
     async getBloggers(req: Request, res: Response) {

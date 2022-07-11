@@ -3,9 +3,11 @@ import mongoose from 'mongoose';
 import { JwtUtility } from '../heplers/JwtUtility';
 import { AuthRepository } from '../repository/auth-repository';
 import { BadRefreshTokensModel, UsersModel } from '../repository/models.mongoose';
-import { UsersRepository } from '../repository/users-repository';
+import { MeItem } from '../types';
 import { AuthService } from './auth.service';
-import { UsersService } from './users.service';
+import TestHelper from './auth.service.test-helper';
+
+jest.setTimeout(1000 * 100)
 
 describe("Auth service", () => {
     let mongodbMemoryServer: MongoMemoryServer;
@@ -21,21 +23,30 @@ describe("Auth service", () => {
         await mongodbMemoryServer.stop()
     })
 
-    const usersRepository = new UsersRepository(UsersModel)
-    const usersService = new UsersService(usersRepository);
-    const emailManager: any = {}
+    
+    const emailManagerMock: any = {
+        sendRegistrationCode: jest.fn()
+    }
+    
     const authRepository = new AuthRepository(BadRefreshTokensModel)
+    const helper = new TestHelper();
 
     const jwtUtility = new JwtUtility()
     const authService = new AuthService(
-        usersService,
-        emailManager,
+        helper.usersService,
+        emailManagerMock,
         jwtUtility,
         authRepository,
     )
 
+    // expect.setState({ authRepository })
+    // expect.getState().authRepository
 
     describe("createTokensByUserId", () => {
+        beforeAll(async () => {
+            await mongoose.connection.db.dropDatabase()
+        })
+
         it("Should return both access token and refresh token", async () => {
             const userId = '123'
             const tokens = await authService.createTokensByUserId(userId)
@@ -47,6 +58,10 @@ describe("Auth service", () => {
     })
 
     describe("canRefreshedTokens", () => {
+        beforeAll(async () => {
+            await mongoose.connection.db.dropDatabase()
+        })
+
         it("Should return false when refresh token is invalidate", async () => {
             const canRefreshed = await authService.canRefreshedTokens("jjj.jjj.jjj")
 
@@ -73,6 +88,71 @@ describe("Auth service", () => {
             const canRefreshed = await authService.canRefreshedTokens(refreshToken)
 
             expect(canRefreshed).toBeTruthy()
+        })
+    })
+
+    describe("me", () => {
+        beforeAll(async () => {
+            await mongoose.connection.db.dropDatabase()
+        })
+
+        it("Should return null when user don't exist", async () => {
+            const userId = "1"
+
+            const meData = await authService.me(userId)
+
+            expect(meData).toBeNull()
+        })
+
+        it("Should return me data when user exist", async () => {
+            const login = 'test';
+            const password = '123';
+            const email = 'test@test.ru';
+
+            const newUser = await helper.makeRegistrationUser(login, password, email)
+            const meData = await authService.me(newUser!.id)
+
+            const expectedResult: MeItem = {
+                userId: newUser!.id,
+                email: newUser!.email,
+                login: newUser!.login
+            } 
+
+            expect(meData).toEqual(expectedResult)
+        })
+    })
+
+    describe("registration", () => {
+        beforeAll(async () => {
+            await mongoose.connection.db.dropDatabase()
+        })
+
+        it("Should sended email when fields of registration is correct", async () => {
+            // Arrange inputs and targets (договоренности)
+            const login = 'test';
+            const password = '123456';
+            const email = 'test@test.ru';
+            const userFields = {
+                login,
+                password,
+                email
+            }
+            const spyMakeRegisteredUser = jest.spyOn(helper.usersService, 'makeRegisteredUser')
+            const spyGetUserById = jest.spyOn(helper.usersService, 'getUserById')
+            
+            emailManagerMock.sendRegistrationCode.mockImplementation(() => true)
+
+            // act
+            const isRegistration = await authService.registration(userFields)
+
+            //assert - утверждать
+            expect(isRegistration).toBeTruthy()
+            expect(emailManagerMock.sendRegistrationCode).toBeCalled()
+            expect(spyMakeRegisteredUser).toBeCalledWith(userFields)
+            expect(spyGetUserById).toBeCalled()
+
+            spyMakeRegisteredUser.mockReset()
+            spyGetUserById.mockReset()
         })
     })
 })
